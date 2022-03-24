@@ -11,10 +11,29 @@ SET cover    = ?,
     public   = ?
 WHERE id = ?;
 
--- name: GetPostByPostID :one
-SELECT *
-FROM post
+-- name: GetPostInfoByPostID :one
+SELECT id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       create_time,
+       modify_time
+FROM post,
+     post_num pn
 WHERE id = ?
+  and id = post_id
+LIMIT 1;
+
+-- name: GetPostByPostID :one
+SELECT p.*, pn.star_num, pn.visited_num
+FROM post p,
+     post_num pn
+WHERE id = ?
+  and id = pn.post_id
 LIMIT 1;
 
 -- name: DeletePostByPostID :exec
@@ -38,13 +57,17 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where public = true
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?;
 
@@ -53,13 +76,17 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where public = false
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?;
 
@@ -68,12 +95,16 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where deleted = true
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?;
 
@@ -82,15 +113,19 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time,
        t.id
 FROM post p,
-     tops t
+     tops t,
+     post_num pn
 where p.id = t.post_id
-ORDER BY t.id
+  and p.id = pn.post_id
+ORDER BY t.id Desc
 LIMIT ?,?;
 
 -- name: ListPostBySearchKey :many
@@ -98,14 +133,18 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time
-FROM post p
+FROM post p,
+     post_num pn
 where (title like ?
     or abstract like ?)
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?;
 
@@ -114,18 +153,77 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time
-FROM post p
+FROM post p,
+     post_num pn
 where deleted = false
   and p.create_time between ? and ?
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?;
 
+-- name: ListPostOrderByCreatedTime :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY create_time Desc
+LIMIT ?,?;
+
+-- name: ListPostOrderByStarNum :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY pn.star_num Desc
+LIMIT ?,?;
+
+-- name: ListPostOrderByVisitedNum :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY pn.visited_num Desc
+LIMIT ?,?;
 /*
 增加帖子:ok
+    增加star数
+    增加visited数
 修改贴子:
     修改内容ok
     设置删除ok

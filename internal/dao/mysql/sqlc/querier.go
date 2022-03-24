@@ -10,31 +10,38 @@ type Querier interface {
 	CreateComment(ctx context.Context, arg CreateCommentParams) error
 	CreateManager(ctx context.Context, arg CreateManagerParams) error
 	CreatePost(ctx context.Context, arg CreatePostParams) error
+	CreatePost_Num(ctx context.Context, postID int64) error
 	CreatePost_Tag(ctx context.Context, arg CreatePost_TagParams) error
 	CreateTag(ctx context.Context, arg CreateTagParams) error
 	CreateTop(ctx context.Context, arg CreateTopParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	CreateUser_Star(ctx context.Context, arg CreateUser_StarParams) error
+	CreateView(ctx context.Context, viewsNum int64) error
 	DeleteCommentByCommentID(ctx context.Context, id int64) error
+	DeleteManager(ctx context.Context, username string) error
 	DeletePostByPostID(ctx context.Context, id int64) error
-	DeletePost_TagByID(ctx context.Context, id int64) error
+	DeletePost_Tag(ctx context.Context, arg DeletePost_TagParams) error
 	DeleteTagByTagID(ctx context.Context, id int64) error
-	DeleteTopByTopID(ctx context.Context, id int64) error
+	DeleteTopByPostID(ctx context.Context, postID int64) error
 	DeleteUser_StarByUserNameAndPostID(ctx context.Context, arg DeleteUser_StarByUserNameAndPostIDParams) error
 	GetCommentByCommentID(ctx context.Context, id int64) (Comment, error)
 	GetManagerByUsername(ctx context.Context, username string) (Manager, error)
-	GetPostByPostID(ctx context.Context, id int64) (Post, error)
-	GetPost_TagById(ctx context.Context, id int64) (PostTag, error)
+	GetPostByPostID(ctx context.Context, id int64) (GetPostByPostIDRow, error)
+	GetPostInfoByPostID(ctx context.Context, id int64) (GetPostInfoByPostIDRow, error)
+	GetPost_Tag(ctx context.Context, arg GetPost_TagParams) (PostTag, error)
 	GetTagById(ctx context.Context, id int64) (Tag, error)
-	GetTopByTopID(ctx context.Context, id int64) (Top, error)
+	GetTopByPostID(ctx context.Context, postID int64) (Top, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUser_StarByUserNameAndPostId(ctx context.Context, arg GetUser_StarByUserNameAndPostIdParams) (int32, error)
-	ListCommentByPostID(ctx context.Context, arg ListCommentByPostIDParams) ([]Comment, error)
-	ListManager(ctx context.Context, arg ListManagerParams) ([]Manager, error)
+	ListCommentByPostID(ctx context.Context, arg ListCommentByPostIDParams) ([]ListCommentByPostIDRow, error)
+	ListManager(ctx context.Context, arg ListManagerParams) ([]ListManagerRow, error)
 	ListPostBySearchKey(ctx context.Context, arg ListPostBySearchKeyParams) ([]ListPostBySearchKeyRow, error)
 	ListPostByStartTime(ctx context.Context, arg ListPostByStartTimeParams) ([]ListPostByStartTimeRow, error)
 	ListPostByTagID(ctx context.Context, arg ListPostByTagIDParams) ([]ListPostByTagIDRow, error)
 	ListPostDeleted(ctx context.Context, arg ListPostDeletedParams) ([]ListPostDeletedRow, error)
+	ListPostOrderByCreatedTime(ctx context.Context, arg ListPostOrderByCreatedTimeParams) ([]ListPostOrderByCreatedTimeRow, error)
+	ListPostOrderByStarNum(ctx context.Context, arg ListPostOrderByStarNumParams) ([]ListPostOrderByStarNumRow, error)
+	ListPostOrderByVisitedNum(ctx context.Context, arg ListPostOrderByVisitedNumParams) ([]ListPostOrderByVisitedNumRow, error)
 	ListPostPrivate(ctx context.Context, arg ListPostPrivateParams) ([]ListPostPrivateRow, error)
 	ListPostPublic(ctx context.Context, arg ListPostPublicParams) ([]ListPostPublicRow, error)
 	ListPostTopping(ctx context.Context, arg ListPostToppingParams) ([]ListPostToppingRow, error)
@@ -42,11 +49,15 @@ type Querier interface {
 	ListTagByPostID(ctx context.Context, arg ListTagByPostIDParams) ([]Tag, error)
 	ListUser(ctx context.Context, arg ListUserParams) ([]User, error)
 	ListUserByCreateTime(ctx context.Context, arg ListUserByCreateTimeParams) ([]User, error)
+	ListViewByCreateTime(ctx context.Context, arg ListViewByCreateTimeParams) ([]View, error)
 	ModifyPostDeletedByID(ctx context.Context, arg ModifyPostDeletedByIDParams) error
 	ModifyPostPublicByID(ctx context.Context, arg ModifyPostPublicByIDParams) error
 	UpdateCommentByCommentID(ctx context.Context, arg UpdateCommentByCommentIDParams) error
-	UpdateManager(ctx context.Context, arg UpdateManagerParams) error
+	UpdateManagerAvatar(ctx context.Context, arg UpdateManagerAvatarParams) error
+	UpdateManagerPassword(ctx context.Context, arg UpdateManagerPasswordParams) error
 	UpdatePostByPostID(ctx context.Context, arg UpdatePostByPostIDParams) error
+	UpdatePost_Num_Star(ctx context.Context, arg UpdatePost_Num_StarParams) error
+	UpdatePost_Num_Visited(ctx context.Context, arg UpdatePost_Num_VisitedParams) error
 	UpdateTag(ctx context.Context, arg UpdateTagParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 }

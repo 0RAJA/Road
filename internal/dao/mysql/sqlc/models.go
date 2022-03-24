@@ -3,7 +3,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -12,14 +11,15 @@ type Comment struct {
 	PostID      int64     `json:"post_id"`
 	Username    string    `json:"username"`
 	Content     string    `json:"content"`
-	ToCommentID int32     `json:"to_comment_id"`
+	ToCommentID int64     `json:"to_comment_id"`
 	CreateTime  time.Time `json:"create_time"`
 	ModifyTime  time.Time `json:"modify_time"`
 }
 
 type Manager struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	AvatarUrl string `json:"avatar_url"`
 }
 
 type Post struct {
@@ -30,10 +30,14 @@ type Post struct {
 	Content    string    `json:"content"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+}
+
+type PostNum struct {
+	PostID     int64 `json:"post_id"`
+	StarNum    int64 `json:"star_num"`
+	VisitedNum int64 `json:"visited_num"`
 }
 
 type PostTag struct {
@@ -54,12 +58,12 @@ type Top struct {
 }
 
 type User struct {
-	Username      string         `json:"username"`
-	AvatarUrl     string         `json:"avatar_url"`
-	DepositoryUrl string         `json:"depository_url"`
-	Address       sql.NullString `json:"address"`
-	CreateTime    time.Time      `json:"create_time"`
-	ModifyTime    time.Time      `json:"modify_time"`
+	Username      string    `json:"username"`
+	AvatarUrl     string    `json:"avatar_url"`
+	DepositoryUrl string    `json:"depository_url"`
+	Address       string    `json:"address"`
+	CreateTime    time.Time `json:"create_time"`
+	ModifyTime    time.Time `json:"modify_time"`
 }
 
 type UserStar struct {
@@ -70,6 +74,6 @@ type UserStar struct {
 
 type View struct {
 	ID         int64     `json:"id"`
-	ViewsNum   int32     `json:"views_num"`
+	ViewsNum   int64     `json:"views_num"`
 	CreateTime time.Time `json:"create_time"`
 }

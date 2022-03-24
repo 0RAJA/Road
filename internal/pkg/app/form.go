@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/0RAJA/Bank/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,6 +10,11 @@ import (
 
 type Response struct {
 	Ctx *gin.Context
+}
+
+type ResponseList struct {
+	List  interface{} `json:"list"`
+	Pager Pager       `json:"page"`
 }
 
 func NewResponse(ctx *gin.Context) *Response {
@@ -21,9 +26,9 @@ func (r *Response) ToResponse(data interface{}) {
 }
 
 func (r *Response) ToResponseList(list interface{}, totalRows int) {
-	r.Ctx.JSON(http.StatusOK, gin.H{
-		"list": list,
-		"pager": Pager{
+	r.Ctx.JSON(http.StatusOK, ResponseList{
+		List: list,
+		Pager: Pager{
 			Page:      GetPage(r.Ctx),
 			PageSize:  GetPageSize(r.Ctx),
 			TotalRows: totalRows,

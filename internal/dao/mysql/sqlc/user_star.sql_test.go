@@ -8,7 +8,7 @@ import (
 )
 
 func testCreateUserStar(t *testing.T, arg CreateUser_StarParams) {
-	err := testQueries.CreateUser_Star(context.Background(), arg)
+	err := TestQueries.CreateUser_Star(context.Background(), arg)
 	require.NoError(t, err)
 	result, err := testGetUserStarByUserNameAndPostID(GetUser_StarByUserNameAndPostIdParams{
 		Username: arg.Username,
@@ -21,7 +21,7 @@ func testCreateUserStar(t *testing.T, arg CreateUser_StarParams) {
 func TestQueries_CreateUser_Star(t *testing.T) {
 	user := testCreateUser2(t)
 	post := testCreatePost(t)
-	err := testQueries.CreateUser_Star(context.Background(), CreateUser_StarParams{
+	err := TestQueries.CreateUser_Star(context.Background(), CreateUser_StarParams{
 		Username: user.Username,
 		PostID:   post.ID,
 	})
@@ -47,7 +47,7 @@ func TestQueries_DeleteUser_StarByUserNameAndPostID(t *testing.T) {
 		PostID:   arg.PostID})
 	require.NoError(t, err)
 	require.True(t, id > 0)
-	err = testQueries.DeleteUser_StarByUserNameAndPostID(context.Background(), DeleteUser_StarByUserNameAndPostIDParams{
+	err = TestQueries.DeleteUser_StarByUserNameAndPostID(context.Background(), DeleteUser_StarByUserNameAndPostIDParams{
 		Username: arg.Username,
 		PostID:   arg.PostID,
 	})
@@ -60,13 +60,13 @@ func TestQueries_DeleteUser_StarByUserNameAndPostID(t *testing.T) {
 }
 
 func testGetUserStarByUserNameAndPostID(arg GetUser_StarByUserNameAndPostIdParams) (int32, error) {
-	return testQueries.GetUser_StarByUserNameAndPostId(context.Background(), arg)
+	return TestQueries.GetUser_StarByUserNameAndPostId(context.Background(), arg)
 }
 
 func TestQueries_GetUser_StarByUserNameAndPostId(t *testing.T) {
 	user := testCreateUser2(t)
 	post := testCreatePost(t)
-	err := testQueries.CreateUser_Star(context.Background(), CreateUser_StarParams{
+	err := TestQueries.CreateUser_Star(context.Background(), CreateUser_StarParams{
 		Username: user.Username,
 		PostID:   post.ID,
 	})

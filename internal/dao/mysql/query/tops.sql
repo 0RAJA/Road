@@ -2,15 +2,15 @@
 INSERT INTO tops (id, post_id)
 VALUES (?, ?);
 
--- name: GetTopByTopID :one
+-- name: GetTopByPostID :one
 SELECT *
 FROM tops
-where id = ?;
+where post_id = ?;
 
--- name: DeleteTopByTopID :exec
+-- name: DeleteTopByPostID :exec
 DELETE
 FROM tops
-WHERE id = ?;
+WHERE post_id = ?;
 /*
 置顶:
     增加:

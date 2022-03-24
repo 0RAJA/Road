@@ -13,9 +13,11 @@ set content = ?
 WHERE id = ?;
 
 -- name: ListCommentByPostID :many
-SELECT *
-FROM comment
+SELECT c.*, u.avatar_url, u.depository_url
+FROM comment c,
+     user u
 where post_id = ?
+  and c.username = u.username
 ORDER BY create_time Desc
 LIMIT ?,?;
 

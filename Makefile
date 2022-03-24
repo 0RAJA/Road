@@ -13,4 +13,8 @@ sqlc:
 	sqlc generate
 test:
 	go test -v -cover ./...
+server:
+	go run main.go
+swag:
+	swag init
 #-e TZ=Asia/Shanghai -e default-time_zone='+8:00'

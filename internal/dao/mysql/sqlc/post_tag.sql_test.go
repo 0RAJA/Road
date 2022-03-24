@@ -3,21 +3,19 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/0RAJA/Road/internal/pkg/snowflake"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func testCreatePostTag3(t *testing.T, post Post) PostTag {
+func testCreatePostTag3(t *testing.T, post CreatePostParams) PostTag {
 	tag := testCreateTag(t)
 	arg := CreatePost_TagParams{
-		ID:     snowflake.GetID(),
 		PostID: post.ID,
 		TagID:  tag.ID,
 	}
-	err := testQueries.CreatePost_Tag(context.Background(), arg)
+	err := TestQueries.CreatePost_Tag(context.Background(), arg)
 	require.NoError(t, err)
-	postTag, err := testGetPostTagByID(arg.ID)
+	postTag, err := testGetPostTagByID(arg.PostID, arg.TagID)
 	require.NoError(t, err)
 	require.NotEmpty(t, postTag)
 	return postTag
@@ -25,13 +23,12 @@ func testCreatePostTag3(t *testing.T, post Post) PostTag {
 func testCreatePostTag2(t *testing.T, tag Tag) PostTag {
 	post := testCreatePost(t)
 	arg := CreatePost_TagParams{
-		ID:     snowflake.GetID(),
 		PostID: post.ID,
 		TagID:  tag.ID,
 	}
-	err := testQueries.CreatePost_Tag(context.Background(), arg)
+	err := TestQueries.CreatePost_Tag(context.Background(), arg)
 	require.NoError(t, err)
-	postTag, err := testGetPostTagByID(arg.ID)
+	postTag, err := testGetPostTagByID(arg.PostID, arg.TagID)
 	require.NoError(t, err)
 	require.NotEmpty(t, postTag)
 	return postTag
@@ -41,13 +38,12 @@ func testCreatePostTag(t *testing.T) PostTag {
 	post := testCreatePost(t)
 	tag := testCreateTag(t)
 	arg := CreatePost_TagParams{
-		ID:     snowflake.GetID(),
 		PostID: post.ID,
 		TagID:  tag.ID,
 	}
-	err := testQueries.CreatePost_Tag(context.Background(), arg)
+	err := TestQueries.CreatePost_Tag(context.Background(), arg)
 	require.NoError(t, err)
-	postTag, err := testGetPostTagByID(arg.ID)
+	postTag, err := testGetPostTagByID(arg.PostID, arg.TagID)
 	require.NoError(t, err)
 	require.NotEmpty(t, postTag)
 	return postTag
@@ -57,23 +53,22 @@ func TestQueries_CreatePost_Tag(t *testing.T) {
 	post := testCreatePost(t)
 	tag := testCreateTag(t)
 	arg := CreatePost_TagParams{
-		ID:     snowflake.GetID(),
 		PostID: post.ID,
 		TagID:  tag.ID,
 	}
-	err := testQueries.CreatePost_Tag(context.Background(), arg)
+	err := TestQueries.CreatePost_Tag(context.Background(), arg)
 	require.NoError(t, err)
 }
 
 func TestQueries_DeletePost_TagByID(t *testing.T) {
 	postTag := testCreatePostTag(t)
-	result, err := testGetPostTagByID(postTag.ID)
+	result, err := testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.NoError(t, err)
 	require.Equal(t, result.ID, postTag.ID)
 	//先放到垃圾桶里才能真正删除从而解除关系
 	err = testDeletePostByID(postTag.PostID) //删除帖子
 	require.NoError(t, err)
-	result, err = testGetPostTagByID(postTag.ID)
+	result, err = testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.NoError(t, err)
 	require.NotEmpty(t, result.ID)
 	testModifyPostDeletedByID(t, ModifyPostDeletedByIDParams{ //放进回收站
@@ -82,20 +77,23 @@ func TestQueries_DeletePost_TagByID(t *testing.T) {
 	})
 	err = testDeletePostByID(postTag.PostID) //再次删除帖子
 	require.NoError(t, err)
-	result, err = testGetPostTagByID(postTag.ID)
+	result, err = testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.Error(t, sql.ErrNoRows, err)
 	require.Empty(t, result)
 	postTag = testCreatePostTag(t)
 	testDeleteTagByID(t, postTag.TagID) //删除标签
-	result, err = testGetPostTagByID(postTag.ID)
+	result, err = testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 	postTag = testCreatePostTag(t)
-	result, err = testGetPostTagByID(postTag.ID)
+	result, err = testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.NoError(t, err)
 	require.Equal(t, result.ID, postTag.ID)
-	err = testQueries.DeletePost_TagByID(context.TODO(), postTag.ID)
+	err = TestQueries.DeletePost_Tag(context.TODO(), DeletePost_TagParams{
+		PostID: postTag.PostID,
+		TagID:  postTag.TagID,
+	})
 	require.NoError(t, err)
-	postTag, err = testGetPostTagByID(postTag.ID)
+	postTag, err = testGetPostTagByID(postTag.PostID, postTag.TagID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 	require.Empty(t, postTag)
 }
@@ -105,7 +103,7 @@ func TestQueries_ListPostByTagID(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		testCreatePostTag2(t, tag)
 	}
-	posts, err := testQueries.ListPostByTagID(context.Background(), ListPostByTagIDParams{
+	posts, err := TestQueries.ListPostByTagID(context.Background(), ListPostByTagIDParams{
 		TagID:  tag.ID,
 		Offset: 0,
 		Limit:  100,
@@ -117,9 +115,16 @@ func TestQueries_ListPostByTagID(t *testing.T) {
 func TestQueries_ListTagByPostID(t *testing.T) {
 	post := testCreatePost(t)
 	for i := 0; i < 10; i++ {
-		testCreatePostTag3(t, post)
+		testCreatePostTag3(t, CreatePostParams{
+			ID:       post.ID,
+			Cover:    "",
+			Title:    "",
+			Abstract: "",
+			Content:  "",
+			Public:   false,
+		})
 	}
-	tags, err := testQueries.ListTagByPostID(context.Background(), ListTagByPostIDParams{
+	tags, err := TestQueries.ListTagByPostID(context.Background(), ListTagByPostIDParams{
 		PostID: post.ID,
 		Offset: 0,
 		Limit:  100,
@@ -128,13 +133,19 @@ func TestQueries_ListTagByPostID(t *testing.T) {
 	require.Len(t, tags, 10)
 }
 
-func testGetPostTagByID(id int64) (PostTag, error) {
-	return testQueries.GetPost_TagById(context.Background(), id)
+func testGetPostTagByID(postID, tagID int64) (PostTag, error) {
+	return TestQueries.GetPost_Tag(context.Background(), GetPost_TagParams{
+		PostID: postID,
+		TagID:  tagID,
+	})
 }
 
 func TestQueries_GetPost_TagByID(t *testing.T) {
 	postTag := testCreatePostTag(t)
-	postTag2, err := testQueries.GetPost_TagById(context.Background(), postTag.ID)
+	postTag2, err := TestQueries.GetPost_Tag(context.Background(), GetPost_TagParams{
+		PostID: postTag.PostID,
+		TagID:  postTag.TagID,
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, postTag2)
 	require.Equal(t, postTag, postTag2)

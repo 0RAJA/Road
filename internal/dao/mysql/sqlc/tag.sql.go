@@ -33,19 +33,6 @@ func (q *Queries) DeleteTagByTagID(ctx context.Context, id int64) error {
 	return err
 }
 
-const getPost_TagById = `-- name: GetPost_TagById :one
-SELECT id, post_id, tag_id
-FROM post_tag
-where id = ?
-`
-
-func (q *Queries) GetPost_TagById(ctx context.Context, id int64) (PostTag, error) {
-	row := q.db.QueryRowContext(ctx, getPost_TagById, id)
-	var i PostTag
-	err := row.Scan(&i.ID, &i.PostID, &i.TagID)
-	return i, err
-}
-
 const getTagById = `-- name: GetTagById :one
 SELECT id, tag_name, create_time
 FROM tags

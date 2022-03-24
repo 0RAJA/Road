@@ -1,13 +1,15 @@
-create table if not exists manager
+create table manager
 (
-    username varchar(10) not null
+    username   varchar(10)                    not null
         primary key,
-    password varchar(32) not null,
+    password   varchar(32)                    not null,
+    avatar_url varchar(20) default 'avl_test' not null,
     constraint manager_username_uindex
         unique (username)
 );
 
-create table if not exists post
+
+create table post
 (
     id          bigint                                not null
         primary key,
@@ -17,8 +19,6 @@ create table if not exists post
     content     text                                  not null,
     public      tinyint(1)  default 1                 not null,
     deleted     tinyint(1)  default 0                 not null,
-    star_num    int         default 0                 not null,
-    visited_num int         default 0                 not null,
     create_time timestamp   default CURRENT_TIMESTAMP not null,
     modify_time timestamp   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint post_id_uindex
@@ -35,19 +35,19 @@ create table if not exists tags
         unique (id)
 );
 
-create table if not exists post_tag
+create table post_tag
 (
-    id      bigint not null
+    id      bigint auto_increment
         primary key,
     post_id bigint not null,
     tag_id  bigint not null,
     constraint post_tag_id_uindex
         unique (id),
     constraint post_tag_post_id_fk
-        foreign key (post_id) references road.post (id)
+        foreign key (post_id) references post (id)
             on update cascade on delete cascade,
     constraint post_tag_tags_id_fk
-        foreign key (tag_id) references road.tags (id)
+        foreign key (tag_id) references tags (id)
             on update cascade on delete cascade
 );
 
@@ -65,18 +65,19 @@ create table if not exists tops
             on update cascade on delete cascade
 );
 
-create table if not exists user
+create table user
 (
     username       varchar(10)                         not null
         primary key,
     avatar_url     varchar(20)                         not null,
     depository_url varchar(20)                         not null,
-    address        varchar(20)                         null,
+    address        varchar(20)                         not null,
     create_time    timestamp default CURRENT_TIMESTAMP not null,
     modify_time    timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint user_username_uindex
         unique (username)
 );
+
 
 create table if not exists comment
 (
@@ -85,7 +86,7 @@ create table if not exists comment
     post_id       bigint                              not null,
     username      varchar(10)                         not null,
     content       text                                not null,
-    to_comment_id int       default 0                 not null,
+    to_comment_id bigint    default 0                 not null,
     create_time   timestamp default CURRENT_TIMESTAMP not null,
     modify_time   timestamp default CURRENT_TIMESTAMP not null,
     constraint comment_id_uindex
@@ -118,9 +119,22 @@ create table if not exists views
 (
     id          bigint auto_increment
         primary key,
-    views_num   int       default 0                 not null,
+    views_num   bigint    default 0                 not null,
     create_time timestamp default CURRENT_TIMESTAMP not null,
     constraint views_id_uindex
         unique (id)
+);
+
+create table post_num
+(
+    post_id     bigint           not null
+        primary key,
+    star_num    bigint default 0 not null,
+    visited_num bigint default 0 not null,
+    constraint post_num_post_id_uindex
+        unique (post_id),
+    constraint post_num_post_id_fk
+        foreign key (post_id) references post (id)
+            on update cascade on delete cascade
 );
 

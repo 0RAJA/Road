@@ -14,9 +14,9 @@ func testCreateTop(t *testing.T) Top {
 		ID:     snowflake.GetID(),
 		PostID: post.ID,
 	}
-	err := testQueries.CreateTop(context.Background(), arg)
+	err := TestQueries.CreateTop(context.Background(), arg)
 	require.NoError(t, err)
-	top, err := testQueries.GetTopByTopID(context.Background(), arg.ID)
+	top, err := TestQueries.GetTopByPostID(context.Background(), arg.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, top)
 	require.Equal(t, top.ID, arg.ID)
@@ -29,36 +29,36 @@ func TestQueries_CreateTop(t *testing.T) {
 		ID:     snowflake.GetID(),
 		PostID: post.ID,
 	}
-	err := testQueries.CreateTop(context.Background(), arg)
+	err := TestQueries.CreateTop(context.Background(), arg)
 	require.NoError(t, err)
-	top, err := testQueries.GetTopByTopID(context.Background(), arg.ID)
+	top, err := TestQueries.GetTopByPostID(context.Background(), arg.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, top)
 	require.Equal(t, top.ID, arg.ID)
 }
 
-func testDeleteTopByTopID(t *testing.T, topID int64) {
-	err := testQueries.DeleteTopByTopID(context.Background(), topID)
+func testDeleteTopByTopID(t *testing.T, postID int64) {
+	err := TestQueries.DeleteTopByPostID(context.Background(), postID)
 	require.NoError(t, err)
-	_, err = testGetTopByID(topID)
+	_, err = testGetTopByPostID(postID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
-func TestQueries_DeleteTopByTopID(t *testing.T) {
+func TestQueries_DeleteTopByPostID(t *testing.T) {
 	top := testCreateTop(t)
-	err := testQueries.DeleteTopByTopID(context.Background(), top.ID)
+	err := TestQueries.DeleteTopByPostID(context.Background(), top.PostID)
 	require.NoError(t, err)
-	_, err = testGetTopByID(top.ID)
+	_, err = testGetTopByPostID(top.PostID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
-func testGetTopByID(topID int64) (Top, error) {
-	return testQueries.GetTopByTopID(context.Background(), topID)
+func testGetTopByPostID(postID int64) (Top, error) {
+	return TestQueries.GetTopByPostID(context.Background(), postID)
 }
 
 func TestQueries_GetTopByTopID(t *testing.T) {
 	top := testCreateTop(t)
-	top1, err := testQueries.GetTopByTopID(context.Background(), top.ID)
+	top1, err := TestQueries.GetTopByPostID(context.Background(), top.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, top1)
 	require.Equal(t, top1.ID, top.ID)

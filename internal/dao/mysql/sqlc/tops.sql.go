@@ -22,25 +22,25 @@ func (q *Queries) CreateTop(ctx context.Context, arg CreateTopParams) error {
 	return err
 }
 
-const deleteTopByTopID = `-- name: DeleteTopByTopID :exec
+const deleteTopByPostID = `-- name: DeleteTopByPostID :exec
 DELETE
 FROM tops
-WHERE id = ?
+WHERE post_id = ?
 `
 
-func (q *Queries) DeleteTopByTopID(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTopByTopID, id)
+func (q *Queries) DeleteTopByPostID(ctx context.Context, postID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTopByPostID, postID)
 	return err
 }
 
-const getTopByTopID = `-- name: GetTopByTopID :one
+const getTopByPostID = `-- name: GetTopByPostID :one
 SELECT id, post_id
 FROM tops
-where id = ?
+where post_id = ?
 `
 
-func (q *Queries) GetTopByTopID(ctx context.Context, id int64) (Top, error) {
-	row := q.db.QueryRowContext(ctx, getTopByTopID, id)
+func (q *Queries) GetTopByPostID(ctx context.Context, postID int64) (Top, error) {
+	row := q.db.QueryRowContext(ctx, getTopByPostID, postID)
 	var i Top
 	err := row.Scan(&i.ID, &i.PostID)
 	return i, err

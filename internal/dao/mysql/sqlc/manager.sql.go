@@ -8,22 +8,34 @@ import (
 )
 
 const createManager = `-- name: CreateManager :exec
-INSERT INTO manager (username, password)
-VALUES (?, ?)
+INSERT INTO manager (username, password, avatar_url)
+VALUES (?, ?, ?)
 `
 
 type CreateManagerParams struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	AvatarUrl string `json:"avatar_url"`
 }
 
 func (q *Queries) CreateManager(ctx context.Context, arg CreateManagerParams) error {
-	_, err := q.db.ExecContext(ctx, createManager, arg.Username, arg.Password)
+	_, err := q.db.ExecContext(ctx, createManager, arg.Username, arg.Password, arg.AvatarUrl)
+	return err
+}
+
+const deleteManager = `-- name: DeleteManager :exec
+DELETE
+FROM manager
+WHERE username = ?
+`
+
+func (q *Queries) DeleteManager(ctx context.Context, username string) error {
+	_, err := q.db.ExecContext(ctx, deleteManager, username)
 	return err
 }
 
 const getManagerByUsername = `-- name: GetManagerByUsername :one
-SELECT username, password
+SELECT username, password, avatar_url
 FROM manager
 WHERE username = ?
 LIMIT 1
@@ -32,12 +44,12 @@ LIMIT 1
 func (q *Queries) GetManagerByUsername(ctx context.Context, username string) (Manager, error) {
 	row := q.db.QueryRowContext(ctx, getManagerByUsername, username)
 	var i Manager
-	err := row.Scan(&i.Username, &i.Password)
+	err := row.Scan(&i.Username, &i.Password, &i.AvatarUrl)
 	return i, err
 }
 
 const listManager = `-- name: ListManager :many
-SELECT username, password
+SELECT username, avatar_url
 FROM manager
 ORDER BY username
 LIMIT ?,?
@@ -48,16 +60,21 @@ type ListManagerParams struct {
 	Limit  int32 `json:"limit"`
 }
 
-func (q *Queries) ListManager(ctx context.Context, arg ListManagerParams) ([]Manager, error) {
+type ListManagerRow struct {
+	Username  string `json:"username"`
+	AvatarUrl string `json:"avatar_url"`
+}
+
+func (q *Queries) ListManager(ctx context.Context, arg ListManagerParams) ([]ListManagerRow, error) {
 	rows, err := q.db.QueryContext(ctx, listManager, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Manager{}
+	items := []ListManagerRow{}
 	for rows.Next() {
-		var i Manager
-		if err := rows.Scan(&i.Username, &i.Password); err != nil {
+		var i ListManagerRow
+		if err := rows.Scan(&i.Username, &i.AvatarUrl); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -71,18 +88,34 @@ func (q *Queries) ListManager(ctx context.Context, arg ListManagerParams) ([]Man
 	return items, nil
 }
 
-const updateManager = `-- name: UpdateManager :exec
+const updateManagerAvatar = `-- name: UpdateManagerAvatar :exec
+UPDATE manager
+SET avatar_url =?
+WHERE username = ?
+`
+
+type UpdateManagerAvatarParams struct {
+	AvatarUrl string `json:"avatar_url"`
+	Username  string `json:"username"`
+}
+
+func (q *Queries) UpdateManagerAvatar(ctx context.Context, arg UpdateManagerAvatarParams) error {
+	_, err := q.db.ExecContext(ctx, updateManagerAvatar, arg.AvatarUrl, arg.Username)
+	return err
+}
+
+const updateManagerPassword = `-- name: UpdateManagerPassword :exec
 UPDATE manager
 SET password =?
 WHERE username = ?
 `
 
-type UpdateManagerParams struct {
+type UpdateManagerPasswordParams struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
 }
 
-func (q *Queries) UpdateManager(ctx context.Context, arg UpdateManagerParams) error {
-	_, err := q.db.ExecContext(ctx, updateManager, arg.Password, arg.Username)
+func (q *Queries) UpdateManagerPassword(ctx context.Context, arg UpdateManagerPasswordParams) error {
+	_, err := q.db.ExecContext(ctx, updateManagerPassword, arg.Password, arg.Username)
 	return err
 }

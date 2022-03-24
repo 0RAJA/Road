@@ -2,11 +2,6 @@
 INSERT INTO tags (id, tag_name)
 VALUES (?, ?);
 
--- name: GetPost_TagById :one
-SELECT *
-FROM post_tag
-where id = ?;
-
 -- name: UpdateTag :exec
 UPDATE tags
 SET tag_name = ?

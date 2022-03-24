@@ -47,21 +47,86 @@ func (q *Queries) DeletePostByPostID(ctx context.Context, id int64) error {
 }
 
 const getPostByPostID = `-- name: GetPostByPostID :one
-SELECT id, cover, title, abstract, content, public, deleted, star_num, visited_num, create_time, modify_time
-FROM post
+SELECT p.id, p.cover, p.title, p.abstract, p.content, p.public, p.deleted, p.create_time, p.modify_time, pn.star_num, pn.visited_num
+FROM post p,
+     post_num pn
 WHERE id = ?
+  and id = pn.post_id
 LIMIT 1
 `
 
-func (q *Queries) GetPostByPostID(ctx context.Context, id int64) (Post, error) {
+type GetPostByPostIDRow struct {
+	ID         int64     `json:"id"`
+	Cover      string    `json:"cover"`
+	Title      string    `json:"title"`
+	Abstract   string    `json:"abstract"`
+	Content    string    `json:"content"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	CreateTime time.Time `json:"create_time"`
+	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
+}
+
+func (q *Queries) GetPostByPostID(ctx context.Context, id int64) (GetPostByPostIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getPostByPostID, id)
-	var i Post
+	var i GetPostByPostIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Cover,
 		&i.Title,
 		&i.Abstract,
 		&i.Content,
+		&i.Public,
+		&i.Deleted,
+		&i.CreateTime,
+		&i.ModifyTime,
+		&i.StarNum,
+		&i.VisitedNum,
+	)
+	return i, err
+}
+
+const getPostInfoByPostID = `-- name: GetPostInfoByPostID :one
+SELECT id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       create_time,
+       modify_time
+FROM post,
+     post_num pn
+WHERE id = ?
+  and id = post_id
+LIMIT 1
+`
+
+type GetPostInfoByPostIDRow struct {
+	ID         int64     `json:"id"`
+	Cover      string    `json:"cover"`
+	Title      string    `json:"title"`
+	Abstract   string    `json:"abstract"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
+	CreateTime time.Time `json:"create_time"`
+	ModifyTime time.Time `json:"modify_time"`
+}
+
+func (q *Queries) GetPostInfoByPostID(ctx context.Context, id int64) (GetPostInfoByPostIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getPostInfoByPostID, id)
+	var i GetPostInfoByPostIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Cover,
+		&i.Title,
+		&i.Abstract,
 		&i.Public,
 		&i.Deleted,
 		&i.StarNum,
@@ -77,14 +142,18 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time
-FROM post p
+FROM post p,
+     post_num pn
 where (title like ?
     or abstract like ?)
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -101,8 +170,10 @@ type ListPostBySearchKeyRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 }
@@ -126,6 +197,8 @@ func (q *Queries) ListPostBySearchKey(ctx context.Context, arg ListPostBySearchK
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,
@@ -149,13 +222,17 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time
-FROM post p
+FROM post p,
+     post_num pn
 where deleted = false
   and p.create_time between ? and ?
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -172,8 +249,10 @@ type ListPostByStartTimeRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 }
@@ -197,6 +276,8 @@ func (q *Queries) ListPostByStartTime(ctx context.Context, arg ListPostByStartTi
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,
@@ -220,12 +301,16 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where deleted = true
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -240,8 +325,10 @@ type ListPostDeletedRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 }
@@ -260,6 +347,221 @@ func (q *Queries) ListPostDeleted(ctx context.Context, arg ListPostDeletedParams
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
+			&i.StarNum,
+			&i.VisitedNum,
+			&i.CreateTime,
+			&i.ModifyTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPostOrderByCreatedTime = `-- name: ListPostOrderByCreatedTime :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY create_time Desc
+LIMIT ?,?
+`
+
+type ListPostOrderByCreatedTimeParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+type ListPostOrderByCreatedTimeRow struct {
+	ID         int64     `json:"id"`
+	Cover      string    `json:"cover"`
+	Title      string    `json:"title"`
+	Abstract   string    `json:"abstract"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
+	CreateTime time.Time `json:"create_time"`
+	ModifyTime time.Time `json:"modify_time"`
+}
+
+func (q *Queries) ListPostOrderByCreatedTime(ctx context.Context, arg ListPostOrderByCreatedTimeParams) ([]ListPostOrderByCreatedTimeRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPostOrderByCreatedTime, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPostOrderByCreatedTimeRow{}
+	for rows.Next() {
+		var i ListPostOrderByCreatedTimeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Cover,
+			&i.Title,
+			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
+			&i.StarNum,
+			&i.VisitedNum,
+			&i.CreateTime,
+			&i.ModifyTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPostOrderByStarNum = `-- name: ListPostOrderByStarNum :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY pn.star_num Desc
+LIMIT ?,?
+`
+
+type ListPostOrderByStarNumParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+type ListPostOrderByStarNumRow struct {
+	ID         int64     `json:"id"`
+	Cover      string    `json:"cover"`
+	Title      string    `json:"title"`
+	Abstract   string    `json:"abstract"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
+	CreateTime time.Time `json:"create_time"`
+	ModifyTime time.Time `json:"modify_time"`
+}
+
+func (q *Queries) ListPostOrderByStarNum(ctx context.Context, arg ListPostOrderByStarNumParams) ([]ListPostOrderByStarNumRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPostOrderByStarNum, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPostOrderByStarNumRow{}
+	for rows.Next() {
+		var i ListPostOrderByStarNumRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Cover,
+			&i.Title,
+			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
+			&i.StarNum,
+			&i.VisitedNum,
+			&i.CreateTime,
+			&i.ModifyTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPostOrderByVisitedNum = `-- name: ListPostOrderByVisitedNum :many
+SELECT p.id,
+       cover,
+       title,
+       abstract,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
+       p.create_time,
+       modify_time
+FROM post p,
+     post_num pn
+where deleted = false
+  and id = post_id
+ORDER BY pn.visited_num Desc
+LIMIT ?,?
+`
+
+type ListPostOrderByVisitedNumParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+type ListPostOrderByVisitedNumRow struct {
+	ID         int64     `json:"id"`
+	Cover      string    `json:"cover"`
+	Title      string    `json:"title"`
+	Abstract   string    `json:"abstract"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
+	CreateTime time.Time `json:"create_time"`
+	ModifyTime time.Time `json:"modify_time"`
+}
+
+func (q *Queries) ListPostOrderByVisitedNum(ctx context.Context, arg ListPostOrderByVisitedNumParams) ([]ListPostOrderByVisitedNumRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPostOrderByVisitedNum, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPostOrderByVisitedNumRow{}
+	for rows.Next() {
+		var i ListPostOrderByVisitedNumRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Cover,
+			&i.Title,
+			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,
@@ -283,13 +585,17 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where public = false
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -304,8 +610,10 @@ type ListPostPrivateRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 }
@@ -324,6 +632,8 @@ func (q *Queries) ListPostPrivate(ctx context.Context, arg ListPostPrivateParams
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,
@@ -347,13 +657,17 @@ SELECT id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        create_time,
        modify_time
-FROM post
+FROM post,
+     post_num pn
 where public = true
   and deleted = false
+  and id = post_id
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -368,8 +682,10 @@ type ListPostPublicRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 }
@@ -388,6 +704,8 @@ func (q *Queries) ListPostPublic(ctx context.Context, arg ListPostPublicParams) 
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,
@@ -411,15 +729,19 @@ SELECT p.id,
        cover,
        title,
        abstract,
-       star_num,
-       visited_num,
+       public,
+       deleted,
+       pn.star_num,
+       pn.visited_num,
        p.create_time,
        modify_time,
        t.id
 FROM post p,
-     tops t
+     tops t,
+     post_num pn
 where p.id = t.post_id
-ORDER BY t.id
+  and p.id = pn.post_id
+ORDER BY t.id Desc
 LIMIT ?,?
 `
 
@@ -433,8 +755,10 @@ type ListPostToppingRow struct {
 	Cover      string    `json:"cover"`
 	Title      string    `json:"title"`
 	Abstract   string    `json:"abstract"`
-	StarNum    int32     `json:"star_num"`
-	VisitedNum int32     `json:"visited_num"`
+	Public     bool      `json:"public"`
+	Deleted    bool      `json:"deleted"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
 	ID_2       int64     `json:"id_2"`
@@ -454,6 +778,8 @@ func (q *Queries) ListPostTopping(ctx context.Context, arg ListPostToppingParams
 			&i.Cover,
 			&i.Title,
 			&i.Abstract,
+			&i.Public,
+			&i.Deleted,
 			&i.StarNum,
 			&i.VisitedNum,
 			&i.CreateTime,

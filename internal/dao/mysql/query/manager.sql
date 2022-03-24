@@ -1,10 +1,15 @@
 -- name: CreateManager :exec
-INSERT INTO manager (username, password)
-VALUES (?, ?);
+INSERT INTO manager (username, password, avatar_url)
+VALUES (?, ?, ?);
 
--- name: UpdateManager :exec
+-- name: UpdateManagerPassword :exec
 UPDATE manager
 SET password =?
+WHERE username = ?;
+
+-- name: UpdateManagerAvatar :exec
+UPDATE manager
+SET avatar_url =?
 WHERE username = ?;
 
 -- name: GetManagerByUsername :one
@@ -14,7 +19,12 @@ WHERE username = ?
 LIMIT 1;
 
 -- name: ListManager :many
-SELECT *
+SELECT username, avatar_url
 FROM manager
 ORDER BY username
 LIMIT ?,?;
+
+-- name: DeleteManager :exec
+DELETE
+FROM manager
+WHERE username = ?;

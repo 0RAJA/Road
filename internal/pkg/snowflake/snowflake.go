@@ -7,14 +7,10 @@ import (
 
 //雪花算法
 
-const (
-	Format = "2006-01-02"
-)
-
 var node *snowflake.Node
 
-func Init(startTine string, machineID int64) error {
-	st, err := time.Parse(Format, startTine)
+func Init(startTime string, format string, machineID int64) error {
+	st, err := time.Parse(format, startTime)
 	if err != nil {
 		return err
 	}

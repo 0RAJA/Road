@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/0RAJA/Bank/db/util"
 	"github.com/0RAJA/Road/internal/pkg/snowflake"
+	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -14,39 +14,40 @@ import (
 func TestQueries_CreatePost(t *testing.T) {
 	arg := CreatePostParams{
 		ID:       snowflake.GetID(),
-		Cover:    util.RandomString(10),
-		Title:    util.RandomString(30),
-		Abstract: util.RandomString(30),
-		Content:  util.RandomString(40),
+		Cover:    utils.RandomString(10),
+		Title:    utils.RandomString(30),
+		Abstract: utils.RandomString(30),
+		Content:  utils.RandomString(40),
 		Public:   true,
 	}
 	st := time.Now()
-	err := testQueries.CreatePost(context.Background(), arg)
+	err := TestQueries.CreatePost(context.Background(), arg)
+	testCreatePostNum(t, arg.ID)
 	require.NoError(t, err)
-	tag, err := testGetPostByID(arg.ID)
+	post, err := testGetPostByID(arg.ID)
 	require.NoError(t, err)
-	require.Equal(t, tag.ID, arg.ID)
-	require.Equal(t, tag.Abstract, arg.Abstract)
-	require.Equal(t, tag.Cover, arg.Cover)
-	require.Equal(t, tag.Title, arg.Title)
-	require.Equal(t, tag.Content, arg.Content)
-	require.False(t, tag.Deleted)
-	require.Zero(t, tag.VisitedNum, tag.StarNum)
-	require.WithinDuration(t, tag.CreateTime, st, time.Second)
-	require.WithinDuration(t, tag.ModifyTime, st, time.Second)
+	require.Equal(t, post.ID, arg.ID)
+	require.Equal(t, post.Abstract, arg.Abstract)
+	require.Equal(t, post.Cover, arg.Cover)
+	require.Equal(t, post.Title, arg.Title)
+	require.Equal(t, post.Content, arg.Content)
+	require.False(t, post.Deleted)
+	require.Zero(t, post.VisitedNum, post.StarNum)
+	require.WithinDuration(t, post.CreateTime, st, time.Second)
+	require.WithinDuration(t, post.ModifyTime, st, time.Second)
 }
 
-func testGetPostByID(postID int64) (Post, error) {
-	return testQueries.GetPostByPostID(context.Background(), postID)
+func testGetPostByID(postID int64) (GetPostByPostIDRow, error) {
+	return TestQueries.GetPostByPostID(context.Background(), postID)
 }
 
 func testDeletePostByID(postID int64) error {
-	return testQueries.DeletePostByPostID(context.Background(), postID)
+	return TestQueries.DeletePostByPostID(context.Background(), postID)
 }
 
 func TestQueries_DeletePostByPostID(t *testing.T) {
 	post := testCreatePost(t)
-	err := testQueries.DeletePostByPostID(context.Background(), post.ID)
+	err := TestQueries.DeletePostByPostID(context.Background(), post.ID)
 	require.NoError(t, err)
 	post1, err := testGetPostByID(post.ID)
 	require.NoError(t, err)
@@ -55,59 +56,73 @@ func TestQueries_DeletePostByPostID(t *testing.T) {
 
 func testCreatePost2(t *testing.T, arg CreatePostParams) {
 	st := time.Now()
-	err := testQueries.CreatePost(context.Background(), arg)
+	err := TestQueries.CreatePost(context.Background(), arg)
+	testCreatePostNum(t, arg.ID)
 	require.NoError(t, err)
-	tag, err := testGetPostByID(arg.ID)
+	post, err := testGetPostByID(arg.ID)
 	require.NoError(t, err)
-	require.Equal(t, tag.ID, arg.ID)
-	require.Equal(t, tag.Abstract, arg.Abstract)
-	require.Equal(t, tag.Cover, arg.Cover)
-	require.Equal(t, tag.Title, arg.Title)
-	require.Equal(t, tag.Content, arg.Content)
-	require.False(t, tag.Deleted)
-	require.Zero(t, tag.VisitedNum, tag.StarNum)
-	require.WithinDuration(t, tag.CreateTime, st, time.Second)
-	require.WithinDuration(t, tag.ModifyTime, st, time.Second)
+	require.Equal(t, post.ID, arg.ID)
+	require.Equal(t, post.Abstract, arg.Abstract)
+	require.Equal(t, post.Cover, arg.Cover)
+	require.Equal(t, post.Title, arg.Title)
+	require.Equal(t, post.Content, arg.Content)
+	require.False(t, post.Deleted)
+	require.Zero(t, post.VisitedNum, post.StarNum)
+	require.WithinDuration(t, post.CreateTime, st, time.Second)
+	require.WithinDuration(t, post.ModifyTime, st, time.Second)
 }
-func testCreatePost(t *testing.T) Post {
+func testCreatePost(t *testing.T) GetPostByPostIDRow {
 	arg := CreatePostParams{
 		ID:       snowflake.GetID(),
-		Cover:    util.RandomString(10),
-		Title:    util.RandomString(30),
-		Abstract: util.RandomString(30),
-		Content:  util.RandomString(40),
+		Cover:    utils.RandomString(10),
+		Title:    utils.RandomString(30),
+		Abstract: utils.RandomString(30),
+		Content:  utils.RandomString(40),
 		Public:   true,
 	}
 	st := time.Now()
-	err := testQueries.CreatePost(context.Background(), arg)
+	err := TestQueries.CreatePost(context.Background(), arg)
+	testCreatePostNum(t, arg.ID)
 	require.NoError(t, err)
-	tag, err := testGetPostByID(arg.ID)
+	post, err := testGetPostByID(arg.ID)
 	require.NoError(t, err)
-	require.Equal(t, tag.ID, arg.ID)
-	require.Equal(t, tag.Abstract, arg.Abstract)
-	require.Equal(t, tag.Cover, arg.Cover)
-	require.Equal(t, tag.Title, arg.Title)
-	require.Equal(t, tag.Content, arg.Content)
-	require.False(t, tag.Deleted)
-	require.Zero(t, tag.VisitedNum, tag.StarNum)
-	require.WithinDuration(t, tag.CreateTime, st, time.Second)
-	require.WithinDuration(t, tag.ModifyTime, st, time.Second)
-	return tag
+	require.Equal(t, post.ID, arg.ID)
+	require.Equal(t, post.Abstract, arg.Abstract)
+	require.Equal(t, post.Cover, arg.Cover)
+	require.Equal(t, post.Title, arg.Title)
+	require.Equal(t, post.Content, arg.Content)
+	require.False(t, post.Deleted)
+	require.Zero(t, post.VisitedNum, post.StarNum)
+	require.WithinDuration(t, post.CreateTime, st, time.Second)
+	require.WithinDuration(t, post.ModifyTime, st, time.Second)
+	return post
 }
-func TestQueries_GetPostByPostID(t *testing.T) {
+
+func TestQueries_GetPostInfoByPostID(t *testing.T) {
 	post1 := testCreatePost(t)
-	post, err := testQueries.GetPostByPostID(context.Background(), post1.ID)
+	post, err := TestQueries.GetPostInfoByPostID(context.Background(), post1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, post)
 	require.Equal(t, post.ID, post1.ID)
-	post, err = testQueries.GetPostByPostID(context.Background(), 1)
+	post, err = TestQueries.GetPostInfoByPostID(context.Background(), 1)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+	require.Empty(t, post)
+}
+
+func TestQueries_GetPostByPostID(t *testing.T) {
+	post1 := testCreatePost(t)
+	post, err := TestQueries.GetPostByPostID(context.Background(), post1.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, post)
+	require.Equal(t, post.ID, post1.ID)
+	post, err = TestQueries.GetPostByPostID(context.Background(), 1)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 	require.Empty(t, post)
 }
 
 func TestQueries_ListPostBySearchKey(t *testing.T) {
 	post := testCreatePost(t)
-	rows, err := testQueries.ListPostBySearchKey(context.Background(), ListPostBySearchKeyParams{
+	rows, err := TestQueries.ListPostBySearchKey(context.Background(), ListPostBySearchKeyParams{
 		Title:    fmt.Sprintf("%%%s%%", post.Title[1:len(post.Title)-1]),
 		Abstract: fmt.Sprintf("%%%s%%", post.Abstract[1:len(post.Title)-1]),
 		Offset:   0,
@@ -120,15 +135,15 @@ func TestQueries_ListPostBySearchKey(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		arg := CreatePostParams{
 			ID:       snowflake.GetID(),
-			Cover:    util.RandomOwner(),
-			Title:    util.RandomOwner() + key + util.RandomOwner(),
-			Abstract: util.RandomOwner(),
-			Content:  util.RandomOwner(),
+			Cover:    utils.RandomOwner(),
+			Title:    utils.RandomOwner() + key + utils.RandomOwner(),
+			Abstract: utils.RandomOwner(),
+			Content:  utils.RandomOwner(),
 			Public:   true,
 		}
 		testCreatePost2(t, arg)
 	}
-	rows, err = testQueries.ListPostBySearchKey(context.Background(), ListPostBySearchKeyParams{
+	rows, err = TestQueries.ListPostBySearchKey(context.Background(), ListPostBySearchKeyParams{
 		Title:    fmt.Sprintf("%%%s%%", key),
 		Abstract: key,
 		Offset:   0,
@@ -144,16 +159,16 @@ func TestQueries_ListPostByStartTime(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		arg := CreatePostParams{
 			ID:       snowflake.GetID(),
-			Cover:    util.RandomOwner(),
-			Title:    util.RandomOwner(),
-			Abstract: util.RandomOwner(),
-			Content:  util.RandomOwner(),
+			Cover:    utils.RandomOwner(),
+			Title:    utils.RandomOwner(),
+			Abstract: utils.RandomOwner(),
+			Content:  utils.RandomOwner(),
 			Public:   true,
 		}
 		testCreatePost2(t, arg)
 	}
 	time.Sleep(2 * time.Second)
-	post, err := testQueries.ListPostByStartTime(context.Background(), ListPostByStartTimeParams{
+	post, err := TestQueries.ListPostByStartTime(context.Background(), ListPostByStartTimeParams{
 		CreateTime:   st,
 		CreateTime_2: time.Now(),
 		Offset:       0,
@@ -164,7 +179,7 @@ func TestQueries_ListPostByStartTime(t *testing.T) {
 }
 
 func TestQueries_ListPostTopping(t *testing.T) {
-	sum, err := testQueries.ListPostTopping(context.Background(), ListPostToppingParams{
+	sum, err := TestQueries.ListPostTopping(context.Background(), ListPostToppingParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -173,16 +188,16 @@ func TestQueries_ListPostTopping(t *testing.T) {
 	for i := 0; i < n; i++ {
 		tops[i] = testCreateTop(t)
 	}
-	tops1, err := testQueries.ListPostTopping(context.Background(), ListPostToppingParams{
+	tops1, err := TestQueries.ListPostTopping(context.Background(), ListPostToppingParams{
 		Offset: 0,
 		Limit:  1000,
 	})
 	require.NoError(t, err)
 	require.Len(t, tops1, len(sum)+n)
 	for i := range tops {
-		testDeleteTopByTopID(t, tops[i].ID)
+		testDeleteTopByTopID(t, tops[i].PostID)
 	}
-	tops1, err = testQueries.ListPostTopping(context.Background(), ListPostToppingParams{
+	tops1, err = TestQueries.ListPostTopping(context.Background(), ListPostToppingParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -190,13 +205,13 @@ func TestQueries_ListPostTopping(t *testing.T) {
 }
 
 func TestQueries_ListPostDeleted(t *testing.T) {
-	posts1, err := testQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
+	posts1, err := TestQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
 		Offset: 0,
 		Limit:  1000,
 	})
 	require.NoError(t, err)
 	n := 10
-	posts := make([]Post, n)
+	posts := make([]GetPostByPostIDRow, n)
 	for i := range posts {
 		posts[i] = testCreatePost(t)
 		testModifyPostDeletedByID(t, ModifyPostDeletedByIDParams{
@@ -204,7 +219,7 @@ func TestQueries_ListPostDeleted(t *testing.T) {
 			ID:      posts[i].ID,
 		})
 	}
-	result, err := testQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
+	result, err := TestQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -216,7 +231,7 @@ func TestQueries_ListPostDeleted(t *testing.T) {
 			ID:      posts[i].ID,
 		})
 	}
-	result, err = testQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
+	result, err = TestQueries.ListPostDeleted(context.Background(), ListPostDeletedParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -225,13 +240,13 @@ func TestQueries_ListPostDeleted(t *testing.T) {
 }
 
 func TestQueries_ListPostPrivate(t *testing.T) {
-	posts1, err := testQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
+	posts1, err := TestQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
 		Offset: 0,
 		Limit:  1000,
 	})
 	require.NoError(t, err)
 	n := 10
-	posts := make([]Post, n)
+	posts := make([]GetPostByPostIDRow, n)
 	for i := range posts {
 		posts[i] = testCreatePost(t)
 		testModifyPostPublicByID(t, ModifyPostPublicByIDParams{
@@ -239,7 +254,7 @@ func TestQueries_ListPostPrivate(t *testing.T) {
 			ID:     posts[i].ID,
 		})
 	}
-	result, err := testQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
+	result, err := TestQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -251,7 +266,7 @@ func TestQueries_ListPostPrivate(t *testing.T) {
 			ID:     posts[i].ID,
 		})
 	}
-	result, err = testQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
+	result, err = TestQueries.ListPostPrivate(context.Background(), ListPostPrivateParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -260,13 +275,13 @@ func TestQueries_ListPostPrivate(t *testing.T) {
 }
 
 func TestQueries_ListPostPublic(t *testing.T) {
-	posts1, err := testQueries.ListPostPublic(context.Background(), ListPostPublicParams{
+	posts1, err := TestQueries.ListPostPublic(context.Background(), ListPostPublicParams{
 		Offset: 0,
 		Limit:  1000,
 	})
 	require.NoError(t, err)
 	n := 10
-	posts := make([]Post, n)
+	posts := make([]GetPostByPostIDRow, n)
 	for i := range posts {
 		posts[i] = testCreatePost(t)
 		testModifyPostPublicByID(t, ModifyPostPublicByIDParams{
@@ -274,7 +289,7 @@ func TestQueries_ListPostPublic(t *testing.T) {
 			ID:     posts[i].ID,
 		})
 	}
-	result, err := testQueries.ListPostPublic(context.Background(), ListPostPublicParams{
+	result, err := TestQueries.ListPostPublic(context.Background(), ListPostPublicParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -286,7 +301,7 @@ func TestQueries_ListPostPublic(t *testing.T) {
 			ID:     posts[i].ID,
 		})
 	}
-	result, err = testQueries.ListPostPublic(context.Background(), ListPostPublicParams{
+	result, err = TestQueries.ListPostPublic(context.Background(), ListPostPublicParams{
 		Offset: 0,
 		Limit:  1000,
 	})
@@ -295,7 +310,7 @@ func TestQueries_ListPostPublic(t *testing.T) {
 }
 
 func testModifyPostDeletedByID(t *testing.T, arg ModifyPostDeletedByIDParams) {
-	err := testQueries.ModifyPostDeletedByID(context.Background(), arg)
+	err := TestQueries.ModifyPostDeletedByID(context.Background(), arg)
 	require.NoError(t, err)
 	post2, err := testGetPostByID(arg.ID)
 	require.NoError(t, err)
@@ -305,7 +320,7 @@ func testModifyPostDeletedByID(t *testing.T, arg ModifyPostDeletedByIDParams) {
 func TestQueries_ModifyPostDeletedByID(t *testing.T) {
 	post := testCreatePost(t)
 	require.False(t, post.Deleted)
-	err := testQueries.ModifyPostDeletedByID(context.Background(), ModifyPostDeletedByIDParams{
+	err := TestQueries.ModifyPostDeletedByID(context.Background(), ModifyPostDeletedByIDParams{
 		Deleted: true,
 		ID:      post.ID,
 	})
@@ -313,7 +328,7 @@ func TestQueries_ModifyPostDeletedByID(t *testing.T) {
 	post2, err := testGetPostByID(post.ID)
 	require.NoError(t, err)
 	require.True(t, post2.Deleted)
-	err = testQueries.ModifyPostDeletedByID(context.Background(), ModifyPostDeletedByIDParams{
+	err = TestQueries.ModifyPostDeletedByID(context.Background(), ModifyPostDeletedByIDParams{
 		Deleted: false,
 		ID:      post.ID,
 	})
@@ -324,7 +339,7 @@ func TestQueries_ModifyPostDeletedByID(t *testing.T) {
 }
 
 func testModifyPostPublicByID(t *testing.T, arg ModifyPostPublicByIDParams) {
-	err := testQueries.ModifyPostPublicByID(context.Background(), arg)
+	err := TestQueries.ModifyPostPublicByID(context.Background(), arg)
 	require.NoError(t, err)
 	post2, err := testGetPostByID(arg.ID)
 	require.NoError(t, err)
@@ -334,7 +349,7 @@ func testModifyPostPublicByID(t *testing.T, arg ModifyPostPublicByIDParams) {
 func TestQueries_ModifyPostPublicByID(t *testing.T) {
 	post := testCreatePost(t)
 	require.True(t, post.Public)
-	err := testQueries.ModifyPostPublicByID(context.Background(), ModifyPostPublicByIDParams{
+	err := TestQueries.ModifyPostPublicByID(context.Background(), ModifyPostPublicByIDParams{
 		Public: false,
 		ID:     post.ID,
 	})
@@ -342,7 +357,7 @@ func TestQueries_ModifyPostPublicByID(t *testing.T) {
 	post2, err := testGetPostByID(post.ID)
 	require.NoError(t, err)
 	require.False(t, post2.Public)
-	err = testQueries.ModifyPostPublicByID(context.Background(), ModifyPostPublicByIDParams{
+	err = TestQueries.ModifyPostPublicByID(context.Background(), ModifyPostPublicByIDParams{
 		Public: true,
 		ID:     post.ID,
 	})
@@ -355,15 +370,15 @@ func TestQueries_ModifyPostPublicByID(t *testing.T) {
 func TestQueries_UpdatePostByPostID(t *testing.T) {
 	post := testCreatePost(t)
 	arg := UpdatePostByPostIDParams{
-		Cover:    util.RandomOwner(),
-		Title:    util.RandomOwner(),
-		Abstract: util.RandomOwner(),
-		Content:  util.RandomOwner(),
+		Cover:    utils.RandomOwner(),
+		Title:    utils.RandomOwner(),
+		Abstract: utils.RandomOwner(),
+		Content:  utils.RandomOwner(),
 		Public:   true,
 		ID:       post.ID,
 	}
 	st := time.Now()
-	err := testQueries.UpdatePostByPostID(context.Background(), arg)
+	err := TestQueries.UpdatePostByPostID(context.Background(), arg)
 	require.NoError(t, err)
 	post2, err := testGetPostByID(post.ID)
 	require.NoError(t, err)
@@ -373,4 +388,22 @@ func TestQueries_UpdatePostByPostID(t *testing.T) {
 	require.Equal(t, arg.Abstract, post2.Abstract)
 	require.Equal(t, arg.Content, post2.Content)
 	require.WithinDuration(t, post2.ModifyTime, st, time.Second)
+}
+
+func TestListPostOrderByCreatedTime(t *testing.T) {
+	n := 5
+	for i := 0; i < n; i++ {
+		testCreatePost(t)
+		time.Sleep(time.Second)
+	}
+	posts, err := TestQueries.ListPostOrderByCreatedTime(context.Background(), ListPostOrderByCreatedTimeParams{
+		Offset: 0,
+		Limit:  int32(n),
+	})
+	require.NoError(t, err)
+	require.Len(t, posts, n)
+	for i := 0; i < n-1; i++ {
+		//log.Println(posts[i].CreateTime, posts[i+1].CreateTime)
+		require.True(t, posts[i].CreateTime.After(posts[i+1].CreateTime))
+	}
 }

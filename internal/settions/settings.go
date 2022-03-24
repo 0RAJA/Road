@@ -38,10 +38,12 @@ type Server struct {
 }
 
 type Redis struct {
-	Address  string `yaml:"Address"`
-	DB       int    `yaml:"DB"`
-	Password string `yaml:"Password"`
-	PoolSize int    `yaml:"PoolSize"`
+	Address         string        `yaml:"Address"`
+	DB              int           `yaml:"DB"`
+	Password        string        `yaml:"Password"`
+	PoolSize        int           `yaml:"PoolSize"`
+	PostTimeout     time.Duration `yaml:"PostTimeout"`
+	PostInfoTimeout time.Duration `yaml:"PostInfoTimeout"`
 }
 
 type Email struct {
@@ -62,7 +64,6 @@ type Mysql struct {
 }
 
 type Token struct {
-	AuthorizationKey     string        `yaml:"AuthorizationKey"`
 	AuthorizationType    string        `yaml:"AuthorizationType"`
 	Key                  string        `yaml:"Key"`
 	AssessTokenDuration  time.Duration `yaml:"AssessTokenDuration"`
@@ -86,6 +87,7 @@ type App struct {
 	Name      string `yaml:"Name"`
 	Version   string `yaml:"Version"`
 	StartTime string `yaml:"StartTime"`
+	Format    string `yaml:"Format"`
 	Logo      string `yaml:"Logo"`
 }
 

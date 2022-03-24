@@ -5,7 +5,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -15,10 +14,10 @@ VALUES (?, ?, ?, ?)
 `
 
 type CreateUserParams struct {
-	Username      string         `json:"username"`
-	AvatarUrl     string         `json:"avatar_url"`
-	DepositoryUrl string         `json:"depository_url"`
-	Address       sql.NullString `json:"address"`
+	Username      string `json:"username"`
+	AvatarUrl     string `json:"avatar_url"`
+	DepositoryUrl string `json:"depository_url"`
+	Address       string `json:"address"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
@@ -153,10 +152,10 @@ WHERE username = ?
 `
 
 type UpdateUserParams struct {
-	AvatarUrl     string         `json:"avatar_url"`
-	DepositoryUrl string         `json:"depository_url"`
-	Address       sql.NullString `json:"address"`
-	Username      string         `json:"username"`
+	AvatarUrl     string `json:"avatar_url"`
+	DepositoryUrl string `json:"depository_url"`
+	Address       string `json:"address"`
+	Username      string `json:"username"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {

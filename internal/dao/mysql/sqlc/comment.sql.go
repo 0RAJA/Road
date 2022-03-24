@@ -5,6 +5,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createComment = `-- name: CreateComment :exec
@@ -17,7 +18,7 @@ type CreateCommentParams struct {
 	PostID      int64  `json:"post_id"`
 	Username    string `json:"username"`
 	Content     string `json:"content"`
-	ToCommentID int32  `json:"to_comment_id"`
+	ToCommentID int64  `json:"to_comment_id"`
 }
 
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) error {
@@ -64,9 +65,11 @@ func (q *Queries) GetCommentByCommentID(ctx context.Context, id int64) (Comment,
 }
 
 const listCommentByPostID = `-- name: ListCommentByPostID :many
-SELECT id, post_id, username, content, to_comment_id, create_time, modify_time
-FROM comment
+SELECT c.id, c.post_id, c.username, c.content, c.to_comment_id, c.create_time, c.modify_time, u.avatar_url, u.depository_url
+FROM comment c,
+     user u
 where post_id = ?
+  and c.username = u.username
 ORDER BY create_time Desc
 LIMIT ?,?
 `
@@ -77,15 +80,27 @@ type ListCommentByPostIDParams struct {
 	Limit  int32 `json:"limit"`
 }
 
-func (q *Queries) ListCommentByPostID(ctx context.Context, arg ListCommentByPostIDParams) ([]Comment, error) {
+type ListCommentByPostIDRow struct {
+	ID            int64     `json:"id"`
+	PostID        int64     `json:"post_id"`
+	Username      string    `json:"username"`
+	Content       string    `json:"content"`
+	ToCommentID   int64     `json:"to_comment_id"`
+	CreateTime    time.Time `json:"create_time"`
+	ModifyTime    time.Time `json:"modify_time"`
+	AvatarUrl     string    `json:"avatar_url"`
+	DepositoryUrl string    `json:"depository_url"`
+}
+
+func (q *Queries) ListCommentByPostID(ctx context.Context, arg ListCommentByPostIDParams) ([]ListCommentByPostIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, listCommentByPostID, arg.PostID, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Comment{}
+	items := []ListCommentByPostIDRow{}
 	for rows.Next() {
-		var i Comment
+		var i ListCommentByPostIDRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.PostID,
@@ -94,6 +109,8 @@ func (q *Queries) ListCommentByPostID(ctx context.Context, arg ListCommentByPost
 			&i.ToCommentID,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.AvatarUrl,
+			&i.DepositoryUrl,
 		); err != nil {
 			return nil, err
 		}

@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/0RAJA/Bank/db/util"
+	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -11,13 +11,13 @@ import (
 
 func TestQueries_GetUserByUsername(t *testing.T) {
 	arg := CreateUserParams{
-		Username:      util.RandomOwner(),
-		AvatarUrl:     util.RandomOwner(),
-		DepositoryUrl: util.RandomOwner(),
+		Username:      utils.RandomOwner(),
+		AvatarUrl:     utils.RandomOwner(),
+		DepositoryUrl: utils.RandomOwner(),
 		Address:       sql.NullString{},
 	}
 	testCreateUser(t, arg)
-	user, err := testQueries.GetUserByUsername(context.Background(), arg.Username)
+	user, err := TestQueries.GetUserByUsername(context.Background(), arg.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 	require.Equal(t, user.Username, arg.Username)
@@ -27,7 +27,7 @@ func TestQueries_GetUserByUsername(t *testing.T) {
 }
 
 func testGetUserByUsername(t *testing.T, username string) User {
-	user, err := testQueries.GetUserByUsername(context.Background(), username)
+	user, err := TestQueries.GetUserByUsername(context.Background(), username)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 	return user
@@ -35,12 +35,12 @@ func testGetUserByUsername(t *testing.T, username string) User {
 
 func testCreateUser2(t *testing.T) User {
 	arg := CreateUserParams{
-		Username:      util.RandomOwner(),
-		AvatarUrl:     util.RandomOwner(),
-		DepositoryUrl: util.RandomOwner(),
+		Username:      utils.RandomOwner(),
+		AvatarUrl:     utils.RandomOwner(),
+		DepositoryUrl: utils.RandomOwner(),
 		Address:       sql.NullString{},
 	}
-	err := testQueries.CreateUser(context.Background(), arg)
+	err := TestQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	user := testGetUserByUsername(t, arg.Username)
 	require.Equal(t, user.Username, arg.Username)
@@ -51,7 +51,7 @@ func testCreateUser2(t *testing.T) User {
 }
 
 func testCreateUser(t *testing.T, arg CreateUserParams) {
-	err := testQueries.CreateUser(context.Background(), arg)
+	err := TestQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	user := testGetUserByUsername(t, arg.Username)
 	require.Equal(t, user.Username, arg.Username)
@@ -62,12 +62,12 @@ func testCreateUser(t *testing.T, arg CreateUserParams) {
 
 func TestQueries_CreateUser(t *testing.T) {
 	arg := CreateUserParams{
-		Username:      util.RandomOwner(),
-		AvatarUrl:     util.RandomOwner(),
-		DepositoryUrl: util.RandomOwner(),
+		Username:      utils.RandomOwner(),
+		AvatarUrl:     utils.RandomOwner(),
+		DepositoryUrl: utils.RandomOwner(),
 		Address:       sql.NullString{},
 	}
-	err := testQueries.CreateUser(context.Background(), arg)
+	err := TestQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	user := testGetUserByUsername(t, arg.Username)
 	require.Equal(t, user.Username, arg.Username)
@@ -78,19 +78,19 @@ func TestQueries_CreateUser(t *testing.T) {
 
 func TestQueries_UpdateUser(t *testing.T) {
 	arg := CreateUserParams{
-		Username:      util.RandomOwner(),
-		AvatarUrl:     util.RandomOwner(),
-		DepositoryUrl: util.RandomOwner(),
+		Username:      utils.RandomOwner(),
+		AvatarUrl:     utils.RandomOwner(),
+		DepositoryUrl: utils.RandomOwner(),
 		Address:       sql.NullString{},
 	}
 	testCreateUser(t, arg)
 	arg2 := UpdateUserParams{
-		Username:      util.RandomOwner(),
-		AvatarUrl:     util.RandomOwner(),
-		DepositoryUrl: util.RandomOwner(),
+		Username:      utils.RandomOwner(),
+		AvatarUrl:     utils.RandomOwner(),
+		DepositoryUrl: utils.RandomOwner(),
 		Address:       sql.NullString{},
 	}
-	err := testQueries.UpdateUser(context.Background(), arg2)
+	err := TestQueries.UpdateUser(context.Background(), arg2)
 	require.NoError(t, err)
 	user := testGetUserByUsername(t, arg.Username)
 	require.Equal(t, user.Username, arg.Username)
@@ -105,14 +105,14 @@ func TestQueries_ListUser(t *testing.T) {
 	users := make([]CreateUserParams, n)
 	for i := 0; i < n; i++ {
 		users[i] = CreateUserParams{
-			Username:      util.RandomOwner(),
-			AvatarUrl:     util.RandomOwner(),
-			DepositoryUrl: util.RandomOwner(),
+			Username:      utils.RandomOwner(),
+			AvatarUrl:     utils.RandomOwner(),
+			DepositoryUrl: utils.RandomOwner(),
 			Address:       sql.NullString{},
 		}
 		testCreateUser(t, users[i])
 	}
-	users2, err := testQueries.ListUser(context.Background(), ListUserParams{
+	users2, err := TestQueries.ListUser(context.Background(), ListUserParams{
 		Offset: int32(n / 2),
 		Limit:  int32(n / 2),
 	})
@@ -128,16 +128,16 @@ func TestQueries_ListUserByCreateTime(t *testing.T) {
 	time.Sleep(time.Second)
 	for i := 0; i < n; i++ {
 		users[i] = CreateUserParams{
-			Username:      util.RandomOwner(),
-			AvatarUrl:     util.RandomOwner(),
-			DepositoryUrl: util.RandomOwner(),
+			Username:      utils.RandomOwner(),
+			AvatarUrl:     utils.RandomOwner(),
+			DepositoryUrl: utils.RandomOwner(),
 			Address:       sql.NullString{},
 		}
 		testCreateUser(t, users[i])
 		time.Sleep(time.Millisecond * 100)
 	}
 	time.Sleep(time.Second)
-	users2, err := testQueries.ListUserByCreateTime(context.Background(), ListUserByCreateTimeParams{
+	users2, err := TestQueries.ListUserByCreateTime(context.Background(), ListUserByCreateTimeParams{
 		CreateTime:   st,
 		CreateTime_2: time.Now(),
 		Offset:       0,
