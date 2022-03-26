@@ -13,7 +13,7 @@ import (
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param file formData file true "文件"
-// @Param type body string true "文件类型 Enums(image,file)"
+// @Param file_type body string true "文件类型 Enums(image,file)"
 // @Success 200 {string} string  "上传文件的url"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

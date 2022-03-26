@@ -95,10 +95,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 WHERE id = ?
@@ -113,10 +113,10 @@ type GetPostInfoByPostIDRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) GetPostInfoByPostID(ctx context.Context, id int64) (GetPostInfoByPostIDRow, error) {
@@ -129,10 +129,10 @@ func (q *Queries) GetPostInfoByPostID(ctx context.Context, id int64) (GetPostInf
 		&i.Abstract,
 		&i.Public,
 		&i.Deleted,
-		&i.StarNum,
-		&i.VisitedNum,
 		&i.CreateTime,
 		&i.ModifyTime,
+		&i.StarNum,
+		&i.VisitedNum,
 	)
 	return i, err
 }
@@ -144,10 +144,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where (title like ?
@@ -172,10 +172,10 @@ type ListPostBySearchKeyRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostBySearchKey(ctx context.Context, arg ListPostBySearchKeyParams) ([]ListPostBySearchKeyRow, error) {
@@ -199,10 +199,10 @@ func (q *Queries) ListPostBySearchKey(ctx context.Context, arg ListPostBySearchK
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -224,10 +224,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -251,10 +251,10 @@ type ListPostByStartTimeRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostByStartTime(ctx context.Context, arg ListPostByStartTimeParams) ([]ListPostByStartTimeRow, error) {
@@ -278,10 +278,10 @@ func (q *Queries) ListPostByStartTime(ctx context.Context, arg ListPostByStartTi
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -303,10 +303,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where deleted = true
@@ -327,10 +327,10 @@ type ListPostDeletedRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostDeleted(ctx context.Context, arg ListPostDeletedParams) ([]ListPostDeletedRow, error) {
@@ -349,10 +349,10 @@ func (q *Queries) ListPostDeleted(ctx context.Context, arg ListPostDeletedParams
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -374,10 +374,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -398,10 +398,10 @@ type ListPostOrderByCreatedTimeRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostOrderByCreatedTime(ctx context.Context, arg ListPostOrderByCreatedTimeParams) ([]ListPostOrderByCreatedTimeRow, error) {
@@ -420,10 +420,10 @@ func (q *Queries) ListPostOrderByCreatedTime(ctx context.Context, arg ListPostOr
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -445,10 +445,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -469,10 +469,10 @@ type ListPostOrderByStarNumRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostOrderByStarNum(ctx context.Context, arg ListPostOrderByStarNumParams) ([]ListPostOrderByStarNumRow, error) {
@@ -491,10 +491,10 @@ func (q *Queries) ListPostOrderByStarNum(ctx context.Context, arg ListPostOrderB
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -516,10 +516,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -540,10 +540,10 @@ type ListPostOrderByVisitedNumRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostOrderByVisitedNum(ctx context.Context, arg ListPostOrderByVisitedNumParams) ([]ListPostOrderByVisitedNumRow, error) {
@@ -562,10 +562,10 @@ func (q *Queries) ListPostOrderByVisitedNum(ctx context.Context, arg ListPostOrd
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -587,10 +587,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where public = false
@@ -612,10 +612,10 @@ type ListPostPrivateRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostPrivate(ctx context.Context, arg ListPostPrivateParams) ([]ListPostPrivateRow, error) {
@@ -634,10 +634,10 @@ func (q *Queries) ListPostPrivate(ctx context.Context, arg ListPostPrivateParams
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -659,10 +659,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where public = true
@@ -684,10 +684,10 @@ type ListPostPublicRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostPublic(ctx context.Context, arg ListPostPublicParams) ([]ListPostPublicRow, error) {
@@ -706,10 +706,10 @@ func (q *Queries) ListPostPublic(ctx context.Context, arg ListPostPublicParams) 
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}
@@ -731,11 +731,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
        modify_time,
-       t.id
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      tops t,
      post_num pn
@@ -757,11 +756,10 @@ type ListPostToppingRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
-	ID_2       int64     `json:"id_2"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostTopping(ctx context.Context, arg ListPostToppingParams) ([]ListPostToppingRow, error) {
@@ -780,11 +778,10 @@ func (q *Queries) ListPostTopping(ctx context.Context, arg ListPostToppingParams
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
-			&i.ID_2,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}

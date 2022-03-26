@@ -23,6 +23,7 @@ func NewRouting() *gin.Engine {
 	}
 	manager := r.Group("/manager", mid.AuthMiddleware(), mid.ManagerAuth())
 	{
+		manager.GET("/check/:username", controller.CheckManagerName)
 		manager.POST("/login", controller.LoginManager)
 		manager.POST("/create", controller.AddManager)
 		manager.PUT("/", controller.UpdateManager)
@@ -35,24 +36,11 @@ func NewRouting() *gin.Engine {
 		post.GET("/info/:post_id", controller.GetPostInfo)
 		infos := post.Group("/infos")
 		{
-			managerAuth := infos.Use(mid.AuthMiddleware(), mid.ManagerAuth())
 			infos.GET("/", controller.ListPostInfos)
-			infos.GET("/public", controller.ListPostInfosPublic)
-			managerAuth.GET("/private", controller.ListPostInfosPrivate)
-			managerAuth.GET("/deleted", controller.ListPostInfosDeleted)
-			infos.GET("/topping", controller.ListPostInfosTopping)
 			infos.GET("/search", controller.SearchPostInfosByKey)
 			infos.GET("/time", controller.SearchPostInfosByCreateTime)
-			star := infos.Group("/star", controller.ListPostInfosOrderByStarNum)
-			{
-				star.GET("/", controller.ListPostInfosOrderByStarNum)
-				star.GET("/grow", controller.ListPostInfosOrderByGrowingStar)
-			}
-			visited := infos.Group("/visit")
-			{
-				visited.GET("/", controller.ListPostInfosOrderByVisitedNum)
-				visited.GET("/grow", controller.ListPostInfosOrderByGrowingVisited)
-			}
+			infos.GET("/star/grow", controller.ListPostInfosOrderByGrowingStar)
+			infos.GET("/visit/grow", controller.ListPostInfosOrderByGrowingVisited)
 		}
 		managerAuth := post.Use(mid.AuthMiddleware(), mid.ManagerAuth())
 		managerAuth.PUT("/update", controller.UpdatePost)
@@ -76,12 +64,14 @@ func NewRouting() *gin.Engine {
 		managerAuth.DELETE("/:tag_id", controller.DeleteTag)
 		managerAuth.PUT("/", controller.UpdateTag)
 		tag.GET("/", controller.ListTags)
+		tag.GET("/check/:tag_name", controller.CheckTagName)
 	}
 	token := r.Group("/token", controller.GetToken)
 	{
 		noLoginAuth := token.Use(mid.NoLogin())
 		noLoginAuth.GET("/get", controller.GetToken)
-		token.GET("/refresh", controller.RefreshToken)
+		token.GET("/redirect", controller.TokenRedirect) //用于从github接受消息用
+		token.PUT("/refresh", controller.RefreshToken)
 	}
 	user := r.Group("/user")
 	{

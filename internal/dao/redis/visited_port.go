@@ -12,13 +12,13 @@ import (
 	获取某个post_id 对应的访问量
 */
 
-func AddVisitedPostNum(ctx context.Context, postID int64) error {
-	return rdb.ZIncrBy(ctx, getRedisKey(keyZSetVisitedNum), 1, int64toA(postID)).Err()
+func (q *Queries) AddVisitedPostNum(ctx context.Context, postID int64) error {
+	return q.rdb.ZIncrBy(ctx, getRedisKey(keyZSetVisitedNum), 1, int64toA(postID)).Err()
 }
 
 // GetVisitedPostNum 获取某个post_id 对应的新增访问量
-func GetVisitedPostNum(ctx context.Context, postID int64) (int64, error) {
-	result, err := rdb.ZScore(ctx, getRedisKey(keyZSetVisitedNum), int64toA(postID)).Result()
+func (q *Queries) GetVisitedPostNum(ctx context.Context, postID int64) (int64, error) {
+	result, err := q.rdb.ZScore(ctx, getRedisKey(keyZSetVisitedNum), int64toA(postID)).Result()
 	if err != nil {
 		return 0, err
 	}
@@ -26,18 +26,26 @@ func GetVisitedPostNum(ctx context.Context, postID int64) (int64, error) {
 }
 
 // ListPostIDByVisitedNum 对新增访问数排序返回对应id
-func ListPostIDByVisitedNum(ctx context.Context, offset, count int64) ([]string, error) {
-	return rdb.ZRevRangeByScore(ctx, getRedisKey(keyZSetVisitedNum), &redis.ZRangeBy{
+func (q *Queries) ListPostIDByVisitedNum(ctx context.Context, offset, count int32) ([]int64, error) {
+	result, err := q.rdb.ZRevRangeByScore(ctx, getRedisKey(keyZSetVisitedNum), &redis.ZRangeBy{
 		Min:    "-1",
 		Max:    "+inf",
-		Offset: offset,
-		Count:  count,
+		Offset: int64(offset),
+		Count:  int64(count),
 	}).Result()
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]int64, len(result))
+	for i := range result {
+		ret[i] = atoInt64Must(result[i])
+	}
+	return ret, nil
 }
 
 // ListAllPostIDByVisitedNumAndSetZero 获取所有的post_id和对应访问量并清零
-func ListAllPostIDByVisitedNumAndSetZero(ctx context.Context) (ret map[int64]int64, err error) {
-	pipe := rdb.TxPipeline()
+func (q *Queries) ListAllPostIDByVisitedNumAndSetZero(ctx context.Context) (ret map[int64]int64, err error) {
+	pipe := q.rdb.TxPipeline()
 	nums := pipe.ZRevRangeByScoreWithScores(ctx, getRedisKey(keyZSetVisitedNum), &redis.ZRangeBy{
 		Min: "-1",
 		Max: "+inf",

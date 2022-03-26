@@ -25,14 +25,16 @@ create table post
         unique (id)
 );
 
-create table if not exists tags
+create table tags
 (
     id          bigint                              not null
         primary key,
     tag_name    varchar(10)                         not null,
     create_time timestamp default CURRENT_TIMESTAMP not null,
     constraint tags_id_uindex
-        unique (id)
+        unique (id),
+    constraint tags_tag_name_uindex
+        unique (tag_name)
 );
 
 create table post_tag
@@ -43,6 +45,8 @@ create table post_tag
     tag_id  bigint not null,
     constraint post_tag_id_uindex
         unique (id),
+    constraint post_tag_post_id_tag_id_uindex
+        unique (post_id, tag_id),
     constraint post_tag_post_id_fk
         foreign key (post_id) references post (id)
             on update cascade on delete cascade,
@@ -50,6 +54,7 @@ create table post_tag
         foreign key (tag_id) references tags (id)
             on update cascade on delete cascade
 );
+
 
 create table if not exists tops
 (

@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/0RAJA/Road/internal/dao/mysql"
+	"github.com/0RAJA/Road/internal/dao/redis"
 	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/pkg/logger"
 	"github.com/0RAJA/Road/internal/pkg/setting"
 	"github.com/0RAJA/Road/internal/pkg/snowflake"
 	"github.com/0RAJA/Road/internal/pkg/token"
 	"github.com/0RAJA/Road/internal/routing"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,8 +26,8 @@ import (
 // @license.name  Raja
 // @license.url   https://github.com/0RAJA
 
-// @host      localhost:8080
-// @BasePath  /
+// @host      humraja.com
+// @BasePath  /road/
 
 // @securityDefinitions.basic  BasicAuth
 func main() {
@@ -102,8 +105,9 @@ func SetupSetting() {
 	global.Maker, err = token.NewPasetoMaker([]byte(global.AllSetting.Token.Key))
 	myPanic(err)
 	initLog()
-	//mysql.Init()
-	//redis.Init()
+	log.Println(global.AllSetting)
+	mysql.Init()
+	redis.Init()
 }
 func myPanic(err error) {
 	if err != nil {

@@ -8,7 +8,7 @@ type File struct {
 	LocalPath string
 }
 
-func NewFile(filetype FileType, suffix []string, maxSize int, urlPrefix string, localpath string) *File {
+func NewType(filetype FileType, suffix []string, maxSize int, urlPrefix string, localpath string) *File {
 	return &File{Type: filetype, Suffix: suffix, MaxSize: maxSize, UrlPrefix: urlPrefix, LocalPath: localpath}
 }
 

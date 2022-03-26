@@ -30,6 +30,7 @@ type Querier interface {
 	GetPostInfoByPostID(ctx context.Context, id int64) (GetPostInfoByPostIDRow, error)
 	GetPost_Tag(ctx context.Context, arg GetPost_TagParams) (PostTag, error)
 	GetTagById(ctx context.Context, id int64) (Tag, error)
+	GetTagByName(ctx context.Context, tagName string) (Tag, error)
 	GetTopByPostID(ctx context.Context, postID int64) (Top, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUser_StarByUserNameAndPostId(ctx context.Context, arg GetUser_StarByUserNameAndPostIdParams) (int32, error)

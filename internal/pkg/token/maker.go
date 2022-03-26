@@ -7,8 +7,6 @@ import (
 
 var ErrSecretLen = errors.New("密钥长度不正确")
 
-const AuthorizationKey = "Authorization"
-
 type Maker interface {
 	// CreateToken 生成Token
 	CreateToken(username string, expireDate time.Duration) (string, *Payload, error)

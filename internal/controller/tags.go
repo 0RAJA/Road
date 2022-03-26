@@ -15,7 +15,6 @@ import (
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param tag_id body int64 true "标签ID"
 // @Param tag_name body string true "标签名"
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
@@ -84,4 +83,19 @@ func ListTags(ctx *gin.Context) {
 		}
 	}
 	response.ToResponseList(tags, len(tags))
+}
+
+// CheckTagName
+// @Summary 判断标签名是否存在
+// @Description 判断标签名是否存在
+// @Tags 标签
+// @Accept application/json
+// @Produce application/json
+// @Param tag_name path string true "标签名"
+// @Success 200 {object} logic.ListTagsReply "返回帖子对应的所有标签的信息"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /tag/check{tag_name} [get]
+func CheckTagName(ctx *gin.Context) {
+
 }

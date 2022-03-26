@@ -5,35 +5,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// DeleteUserStar
-// @Summary 取消用户对于某个帖子的点赞
-// @Description 通过post_id取消用户对于某个帖子的点赞
-// @Tags user_star
-// @Accept application/json
-// @Produce application/json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param post_id path int64 true "帖子ID"
-// @Success 200 {string} string  ""
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /star/{post_id} [delete]
-func DeleteUserStar(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	response.ToResponse(nil)
-}
-
 // UserStarPost
-// @Summary 用户对某个帖子点赞
-// @Description 设置用户对于某个帖子的点赞
+// @Summary 用户对某个帖子点赞或取消点赞
+// @Description 用户对某个帖子点赞或取消点赞
 // @Tags user_star
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param post_id path int64 true "帖子ID"
+// @Param post_id body int64 true "帖子ID"
+// @Param state body bool true "点赞状态 Enums(true,false)"
 // @Success 200 {string} string  ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /star/{post_id} [put]
+// @Router /star [put]
 func UserStarPost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	response.ToResponse(nil)

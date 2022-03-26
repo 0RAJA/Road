@@ -12,6 +12,13 @@ type AllSettings struct {
 	Mysql     Mysql     `yaml:"Mysql"`
 	Pagelines Pagelines `yaml:"Pagelines"`
 	Token     Token     `yaml:"Token"`
+	Github    Github    `yaml:"Github"`
+}
+
+type Github struct {
+	ClientID     string `yaml:"ClientID"`
+	ClientSecret string `yaml:"ClientSecret"`
+	RedirectUri  string `yaml:"RedirectUri"`
 }
 
 type Pagelines struct {

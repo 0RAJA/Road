@@ -8,6 +8,21 @@ import (
 	"time"
 )
 
+// CheckManagerName
+// @Summary 检查管理员名是否存在
+// @Description 检查管理员名是否存在
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param username path string true "用户名 3<=len<=50"
+// @Success 200 {bool} bool "返回是否存在此管理员"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /manager/check/{username} [get]
+func CheckManagerName(ctx *gin.Context) {
+
+}
+
 // LoginManager
 // @Summary 管理员登录
 // @Description 用于管理员使用账号和密码进行登录

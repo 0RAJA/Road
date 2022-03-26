@@ -16,7 +16,7 @@ import (
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param username path string true "用户名"
-// @Success 200 {object} logic.UserInfo  "用户信息"
+// @Success 200 {object} logic.User  "用户信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /user/{username} [get]
@@ -35,6 +35,8 @@ func GetUserInfo(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
+// @Param page query int false "页码 default 1"
+// @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListUsersReply  "用户信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

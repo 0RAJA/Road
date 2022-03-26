@@ -1,4 +1,4 @@
-basePath: /
+basePath: /road/
 definitions:
   errcode.Error:
     properties:
@@ -326,7 +326,7 @@ definitions:
         description: 访问数
         type: integer
     type: object
-host: localhost:8080
+host: humraja.com
 info:
   contact: {}
   description: The Road Of Code
@@ -706,6 +706,11 @@ paths:
       - application/json
       description: 将一个处于删除状态的帖子真正删除
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: path
         name: post_id
@@ -794,6 +799,11 @@ paths:
       - application/json
       description: 修改一个帖子删除状态
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: body
         name: post_id
@@ -830,6 +840,11 @@ paths:
       - application/json
       description: 获取一个帖子的简介信息
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: path
         name: post_id
@@ -859,6 +874,25 @@ paths:
       - application/json
       description: 列出帖子简介，默认按创建时间倒序
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 列出什么类型的帖子 Enums(infos,public,private,deleted,topping,star_num,visited_num)
+          分别对应默认时间排序，公开的，私密的，删除的，置顶的，点赞数排序，访问数排序
+        enum:
+        - infos
+        - public
+        - private
+        - deleted
+        - topping
+        - star_num
+        - visited_num
+        in: query
+        name: list_by
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -885,123 +919,17 @@ paths:
       summary: 列出帖子简介
       tags:
       - 文章
-  /post/infos/deleted:
-    get:
-      consumes:
-      - application/json
-      description: 列出标记为删除的帖子的简介信息，默认按创建时间倒序
-      parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 列出标记为删除的帖子的简介信息
-      tags:
-      - 文章
-  /post/infos/private:
-    get:
-      consumes:
-      - application/json
-      description: 列出私密的帖子简介信息，默认按创建时间倒序
-      parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 列出私密的帖子的简介信息
-      tags:
-      - 文章
-  /post/infos/public:
-    get:
-      consumes:
-      - application/json
-      description: 列出公开的帖子简介信息，默认按创建时间倒序
-      parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 列出公开的帖子的简介信息
-      tags:
-      - 文章
   /post/infos/search:
     get:
       consumes:
       - application/json
       description: 通过关键字搜索帖子的标题和简介，默认按置顶先后倒序
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 关键字 1<=len<=15
         in: query
         name: key
@@ -1032,44 +960,17 @@ paths:
       summary: 通过关键字搜索帖子的标题和简介
       tags:
       - 文章
-  /post/infos/star:
-    get:
-      consumes:
-      - application/json
-      description: 通过点赞数排序获取帖子简介信息，按点赞数由高到低排序
-      parameters:
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 通过点赞数排序获取帖子简介信息
-      tags:
-      - 文章
   /post/infos/star/grow:
     get:
       consumes:
       - application/json
       description: 通过按新增点赞数排序的帖子简介信息，按新增点赞数由高到低排序
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -1102,6 +1003,11 @@ paths:
       - application/json
       description: 通过时间段来检索帖子，默认按创建时间先后倒序
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -1128,76 +1034,17 @@ paths:
       summary: 通过时间段来检索帖子
       tags:
       - 文章
-  /post/infos/topping:
-    get:
-      consumes:
-      - application/json
-      description: 列出置顶的帖子的简介信息，默认按置顶先后倒序
-      parameters:
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 列出置顶的帖子的简介信息
-      tags:
-      - 文章
-  /post/infos/visit:
-    get:
-      consumes:
-      - application/json
-      description: 通过访问数排序获取帖子简介信息，按访问数由高到低排序
-      parameters:
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 通过访问数排序获取帖子简介信息
-      tags:
-      - 文章
   /post/infos/visit/grow:
     get:
       consumes:
       - application/json
       description: 通过按新增访问数排序的帖子简介信息，按新增访问数由高到低排序
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -1230,6 +1077,11 @@ paths:
       - application/json
       description: 获取一个帖子的完整信息
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: path
         name: post_id
@@ -1259,6 +1111,11 @@ paths:
       - application/json
       description: 修改一个帖子公开状态
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: body
         name: post_id
@@ -1812,10 +1669,10 @@ paths:
         name: file
         required: true
         type: file
-      - description: 文件类型 Enums(
+      - description: 文件类型 Enums(image,file)
         enum:
-        - '"image"'
-        - '"file"'
+        - image
+        - file
         in: body
         name: type
         required: true
@@ -1909,7 +1766,7 @@ paths:
             $ref: '#/definitions/errcode.Error'
       summary: 通过时间段来检索用户信息
       tags:
-      - post
+      - user
   /user/users:
     get:
       consumes:

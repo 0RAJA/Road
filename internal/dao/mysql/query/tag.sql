@@ -23,6 +23,11 @@ LIMIT ?,?;
 DELETE
 FROM tags
 WHERE id = ?;
+
+-- name: GetTagByName :one
+select *
+from tags
+where tag_name = ?;
 /*
 标签：
     增加

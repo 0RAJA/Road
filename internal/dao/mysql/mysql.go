@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/0RAJA/Road/internal/dao/mysql/sqlc"
 	"github.com/0RAJA/Road/internal/global"
 	_ "github.com/go-sql-driver/mysql"
@@ -17,4 +18,8 @@ func Init() {
 		panic(err)
 	}
 	Query = db.New(conn)
+}
+
+func IsNil(err error) bool {
+	return errors.Is(err, sql.ErrNoRows)
 }

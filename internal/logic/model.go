@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"mime/multipart"
 	"time"
 )
 
@@ -25,7 +26,6 @@ type AddCommentParams struct {
 type ModifyCommentParams struct {
 	Content   string `json:"content" binding:"required"`
 	CommentID int64  `json:"comment_id" binding:"required,gte=1"`
-	Pagination
 }
 
 type ListCommentByPostIDParams struct {
@@ -66,7 +66,7 @@ type ReToken struct {
 	ExpiredAt    time.Time `json:"expiredAt"`    //"过期时间"`
 }
 
-type LoginManagerRequest struct {
+type LoginManagerParams struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -118,11 +118,6 @@ type Post struct {
 	VisitedNum int64     `json:"visited_num"` //访问数
 }
 
-type PostWithTags struct {
-	Post Post  `json:"post"`
-	Tags []Tag `json:"tags,omitempty"`
-}
-
 type PostInfo struct {
 	ID         int64     `json:"id"`          //帖子ID
 	Cover      string    `json:"cover"`       //帖子封面ID
@@ -134,11 +129,6 @@ type PostInfo struct {
 	ModifyTime time.Time `json:"modify_time"` //修改时间
 	StarNum    int64     `json:"star_num"`    //点赞数
 	VisitedNum int64     `json:"visited_num"` //访问数
-}
-
-type PostInfoWithTags struct {
-	PostInfo PostInfo `json:"postInfo"`
-	Tags     []Tag    `json:"tags"`
 }
 
 type PostRequest struct {
@@ -153,10 +143,13 @@ type UpdatePostParams struct {
 	PostRequest
 	PostID int64 `json:"post_id" binding:"required,gte=1"`
 }
-
+type ListPostInfosParams struct {
+	ListBy string `json:"list_by" binding:"required,oneof=infos,public,private,deleted,topping,star_num,visited_num"`
+	Pagination
+}
 type ListPostInfosReply struct {
-	List  []PostInfoWithTags `json:"list,omitempty"`
-	Pager Pager              `json:"pager"`
+	List  []PostInfo `json:"list,omitempty"`
+	Pager Pager      `json:"pager"`
 }
 
 type ModifyPostDeletedParam struct {
@@ -181,6 +174,11 @@ type SearchPostInfosByCreateTimeParam struct {
 }
 
 type PostTagParams struct {
+	PostID int64 `json:"post_id" binding:"required,gte=1"`
+	TagID  int64 `json:"tag_id" binding:"required,gte=1"`
+}
+
+type DeletePostTagParams struct {
 	PostID int64 `json:"post_id" binding:"required,gte=1"`
 	TagID  int64 `json:"tag_id" binding:"required,gte=1"`
 }
@@ -214,15 +212,24 @@ type UpdateTagParams struct {
 	TagName string `json:"tag_name" binding:"required,alphanumunicode"`
 }
 
+type UploadParams struct {
+	File     *multipart.FileHeader `json:"file,omitempty" binding:"required"`
+	FileType string                `json:"file_type,omitempty" binding:"required,oneof=file,image"`
+}
+
 type GetTokenReply struct {
 	User    UserInfo `json:"user"`     //用户信息
 	Token   Token    `json:"token"`    //Token
 	ReToken ReToken  `json:"re_token"` //ReToken
 }
 
+type RefreshTokenReplyParams struct {
+	Token   string `json:"token,omitempty"`
+	ReToken string `json:"re_token,omitempty"`
+}
+
 type RefreshTokenReply struct {
-	User  UserInfo `json:"user"`  //用户信息
-	Token Token    `json:"token"` // Token
+	Token Token `json:"token"` // Token
 }
 
 type User struct {
@@ -233,7 +240,11 @@ type User struct {
 	CreateTime    time.Time `json:"create_time"`    //创建时间
 	ModifyTime    time.Time `json:"modify_time"`    //修改时间
 }
-
+type ListUsersParams struct {
+	StartTime time.Time `json:"start_time" binding:"required,datetime"`
+	EndTime   time.Time `json:"end_time" binding:"required,datetime"`
+	Pagination
+}
 type ListUsersReply struct {
 	Users []User `json:"users"`
 	Pager Pager  `json:"pager"`

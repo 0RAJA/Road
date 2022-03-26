@@ -672,6 +672,13 @@ const docTemplate = `{
                 "summary": "修改一个帖子删除状态",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "帖子ID",
                         "name": "post_id",
                         "in": "body",
@@ -727,6 +734,13 @@ const docTemplate = `{
                 "summary": "获取一个帖子的简介信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "帖子ID",
                         "name": "post_id",
@@ -771,55 +785,6 @@ const docTemplate = `{
                 "summary": "列出帖子简介",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/deleted": {
-            "get": {
-                "description": "列出标记为删除的帖子的简介信息，默认按创建时间倒序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "列出标记为删除的帖子的简介信息",
-                "parameters": [
-                    {
                         "type": "string",
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
@@ -827,115 +792,19 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/private": {
-            "get": {
-                "description": "列出私密的帖子简介信息，默认按创建时间倒序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "列出私密的帖子的简介信息",
-                "parameters": [
-                    {
+                        "enum": [
+                            "infos",
+                            "public",
+                            "private",
+                            "deleted",
+                            "topping",
+                            "star_num",
+                            "visited_num"
+                        ],
                         "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/public": {
-            "get": {
-                "description": "列出公开的帖子简介信息，默认按创建时间倒序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "列出公开的帖子的简介信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
+                        "description": "列出什么类型的帖子 Enums(infos,public,private,deleted,topping,star_num,visited_num) 分别对应默认时间排序，公开的，私密的，删除的，置顶的，点赞数排序，访问数排序",
+                        "name": "list_by",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -989,59 +858,17 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "关键字 1\u003c=len\u003c=15",
                         "name": "key",
                         "in": "query"
                     },
-                    {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/star": {
-            "get": {
-                "description": "通过点赞数排序获取帖子简介信息，按点赞数由高到低排序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "通过点赞数排序获取帖子简介信息",
-                "parameters": [
                     {
                         "type": "integer",
                         "description": "页码 default 1",
@@ -1092,6 +919,13 @@ const docTemplate = `{
                 "summary": "通过按新增点赞数排序的帖子简介信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "页码 default 1",
                         "name": "page",
@@ -1141,103 +975,12 @@ const docTemplate = `{
                 "summary": "通过时间段来检索帖子",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/topping": {
-            "get": {
-                "description": "列出置顶的帖子的简介信息，默认按置顶先后倒序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "列出置顶的帖子的简介信息",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/post/infos/visit": {
-            "get": {
-                "description": "通过访问数排序获取帖子简介信息，按访问数由高到低排序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "通过访问数排序获取帖子简介信息",
-                "parameters": [
                     {
                         "type": "integer",
                         "description": "页码 default 1",
@@ -1288,6 +1031,13 @@ const docTemplate = `{
                 "summary": "通过按新增访问数排序的帖子简介信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "页码 default 1",
                         "name": "page",
@@ -1337,6 +1087,13 @@ const docTemplate = `{
                 "summary": "获取一个帖子的完整信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "帖子ID",
                         "name": "post_id",
@@ -1380,6 +1137,13 @@ const docTemplate = `{
                 ],
                 "summary": "修改一个帖子公开状态",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "帖子ID",
                         "name": "post_id",
@@ -1533,6 +1297,13 @@ const docTemplate = `{
                 ],
                 "summary": "真正删除一个帖子",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "帖子ID",
@@ -2259,10 +2030,10 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "\"image\"",
-                            "\"file\""
+                            "image",
+                            "file"
                         ],
-                        "description": "文件类型 Enums(",
+                        "description": "文件类型 Enums(image,file)",
                         "name": "type",
                         "in": "body",
                         "required": true,
@@ -2303,7 +2074,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "post"
+                    "user"
                 ],
                 "summary": "通过时间段来检索用户信息",
                 "parameters": [
@@ -3033,8 +2804,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Host:             "humraja.com",
+	BasePath:         "/road/",
 	Schemes:          []string{},
 	Title:            "Road",
 	Description:      "The Road Of Code",

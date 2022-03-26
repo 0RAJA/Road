@@ -38,3 +38,4 @@
 {"level":"ERROR","ts":"2022-03-23T21:46:04.415+0800","caller":"Road/main.go:45","msg":"http: Server closed"}
 {"level":"ERROR","ts":"2022-03-23T21:49:04.285+0800","caller":"Road/main.go:43","msg":"http: Server closed"}
 {"level":"ERROR","ts":"2022-03-23T22:45:32.393+0800","caller":"Road/main.go:43","msg":"http: Server closed"}
+{"level":"ERROR","ts":"2022-03-24T21:43:43.552+0800","caller":"Road/main.go:46","msg":"http: Server closed"}

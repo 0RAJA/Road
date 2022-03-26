@@ -1,4 +1,4 @@
-.PHONY: mysql_init
+.PHONY: mysql_init redis_init migrate_install migrate_init_db migrate_up sqlc test server swag
 mysql_init:
 	docker run --name mysql57 -v /home/raja/workspace/database/road/mysql/database:/var/lib/mysql -v /home/raja/workspace/database/road/mysql/conf:/etc/mysql/ -e MYSQL_ROOT_PASSWORD=WW876001 -e MYSQL_DATABASE=road -p 3306:3306 -d mysql:5.7
 redis_init:

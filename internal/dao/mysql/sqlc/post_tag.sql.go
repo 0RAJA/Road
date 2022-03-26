@@ -66,10 +66,10 @@ SELECT p.id,
        p.abstract,
        p.public,
        p.deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       p.modify_time
+       p.modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post_tag pt
          join post p
          join tags t
@@ -91,10 +91,10 @@ type ListPostByTagIDRow struct {
 	Abstract   string    `json:"abstract"`
 	Public     bool      `json:"public"`
 	Deleted    bool      `json:"deleted"`
-	StarNum    int64     `json:"star_num"`
-	VisitedNum int64     `json:"visited_num"`
 	CreateTime time.Time `json:"create_time"`
 	ModifyTime time.Time `json:"modify_time"`
+	StarNum    int64     `json:"star_num"`
+	VisitedNum int64     `json:"visited_num"`
 }
 
 func (q *Queries) ListPostByTagID(ctx context.Context, arg ListPostByTagIDParams) ([]ListPostByTagIDRow, error) {
@@ -113,10 +113,10 @@ func (q *Queries) ListPostByTagID(ctx context.Context, arg ListPostByTagIDParams
 			&i.Abstract,
 			&i.Public,
 			&i.Deleted,
-			&i.StarNum,
-			&i.VisitedNum,
 			&i.CreateTime,
 			&i.ModifyTime,
+			&i.StarNum,
+			&i.VisitedNum,
 		); err != nil {
 			return nil, err
 		}

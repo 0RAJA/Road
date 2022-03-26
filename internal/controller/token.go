@@ -18,12 +18,18 @@ func GetToken(ctx *gin.Context) {
 
 }
 
+func TokenRedirect(ctx *gin.Context) {
+
+}
+
 // RefreshToken
 // @Summary 刷新token
 // @Description 将过期的token和未过期的retoken换取新的token
 // @Tags auth
 // @Accept application/json
 // @Produce application/json
+// @Param token body string true "过期的token"
+// @Param re_token body string true "未过期的刷新token"
 // @Success 200 {object} logic.RefreshTokenReply "返回用户信息和新的token"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

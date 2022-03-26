@@ -57,8 +57,9 @@ func UpdatePost(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id path int64 true "帖子ID"
-// @Success 200 {object} logic.PostWithTags "获取一个帖子的ID,封面，标题，简介，内容,是否公开,是否删除以及,创建时间,修改时间,点赞数和浏览数"
+// @Success 200 {object} logic.Post "获取一个帖子的ID,封面，标题，简介，内容,是否公开,是否删除以及,创建时间,修改时间,点赞数和浏览数"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /post/post/{post_id} [get]
@@ -86,26 +87,25 @@ func GetPost(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id path int64 true "帖子ID"
-// @Success 200 {object}  logic.PostInfoWithTags "返回一个帖子的ID,封面，标题，简介，是否公开,是否删除以及,创建时间和修改时间以及点赞数和访问数和其对应标签的信息"
+// @Success 200 {object}  logic.PostInfo "返回一个帖子的ID,封面，标题，简介，是否公开,是否删除以及,创建时间和修改时间以及点赞数和访问数和其对应标签的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /post/info/{post_id} [get]
 func GetPostInfo(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	postInfo := logic.PostInfoWithTags{
-		PostInfo: logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		},
+	postInfo := logic.PostInfo{
+		ID:         utils.RandomInt(1, 100),
+		Cover:      "",
+		Title:      "",
+		Abstract:   "",
+		Public:     false,
+		Deleted:    false,
+		CreateTime: time.Now(),
+		ModifyTime: time.Now(),
+		StarNum:    0,
+		VisitedNum: 0,
 	}
 	response.ToResponse(postInfo)
 }
@@ -116,6 +116,7 @@ func GetPostInfo(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
 // @Param deleted body bool true "帖子删除状态"
 // @Success 200 {string} string ""
@@ -133,6 +134,7 @@ func ModifyPostDeleted(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id path int64 true "帖子ID"
 // @Success 200 {string}  string ""
 // @Failure 400 {object} errcode.Error "请求错误"
@@ -149,6 +151,7 @@ func RealDeletePost(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
 // @Param public body bool true "帖子公开状态"
 // @Success 200 {string}  string ""
@@ -166,6 +169,8 @@ func ModifyPostPublic(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param list_by query string true "列出什么类型的帖子 Enums(infos,public,private,deleted,topping,star_num,visited_num) 分别对应默认时间排序，公开的，私密的，删除的，置顶的，点赞数排序，访问数排序"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
@@ -175,169 +180,19 @@ func ModifyPostPublic(ctx *gin.Context) {
 func ListPostInfos(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
+	infos := make([]logic.PostInfo, pageSize)
 	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosPublic
-// @Summary 列出公开的帖子的简介信息
-// @Description 列出公开的帖子简介信息，默认按创建时间倒序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/public [get]
-func ListPostInfosPublic(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosPrivate
-// @Summary 列出私密的帖子的简介信息
-// @Description 列出私密的帖子简介信息，默认按创建时间倒序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/private [get]
-func ListPostInfosPrivate(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosDeleted
-// @Summary 列出标记为删除的帖子的简介信息
-// @Description 列出标记为删除的帖子的简介信息，默认按创建时间倒序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/deleted [get]
-func ListPostInfosDeleted(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosTopping
-// @Summary 列出置顶的帖子的简介信息
-// @Description 列出置顶的帖子的简介信息，默认按置顶先后倒序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/topping [get]
-func ListPostInfosTopping(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
+		infos[i] = logic.PostInfo{
+			ID:         utils.RandomInt(1, 100),
+			Cover:      "",
+			Title:      "",
+			Abstract:   "",
+			Public:     false,
+			Deleted:    false,
+			CreateTime: time.Now(),
+			ModifyTime: time.Now(),
+			StarNum:    0,
+			VisitedNum: 0,
 		}
 	}
 	response.ToResponseList(infos, len(infos))
@@ -349,6 +204,7 @@ func ListPostInfosTopping(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param key query string key "关键字 1<=len<=15"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
@@ -359,22 +215,19 @@ func ListPostInfosTopping(ctx *gin.Context) {
 func SearchPostInfosByKey(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
+	infos := make([]logic.PostInfo, pageSize)
 	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
+		infos[i] = logic.PostInfo{
+			ID:         utils.RandomInt(1, 100),
+			Cover:      "",
+			Title:      "",
+			Abstract:   "",
+			Public:     false,
+			Deleted:    false,
+			CreateTime: time.Now(),
+			ModifyTime: time.Now(),
+			StarNum:    0,
+			VisitedNum: 0,
 		}
 	}
 	response.ToResponseList(infos, len(infos))
@@ -386,6 +239,7 @@ func SearchPostInfosByKey(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param start_time query time.Time true "起始时间 (2002-03-26)"
 // @Param end_time query time.Time true "结束时间 (2002-03-26)"
 // @Param page query int false "页码 default 1"
@@ -397,94 +251,19 @@ func SearchPostInfosByKey(ctx *gin.Context) {
 func SearchPostInfosByCreateTime(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
+	infos := make([]logic.PostInfo, pageSize)
 	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosOrderByStarNum
-// @Summary 通过点赞数排序获取帖子简介信息
-// @Description 通过点赞数排序获取帖子简介信息，按点赞数由高到低排序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/star [get]
-func ListPostInfosOrderByStarNum(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
-		}
-	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosOrderByVisitedNum
-// @Summary 通过访问数排序获取帖子简介信息
-// @Description 通过访问数排序获取帖子简介信息，按访问数由高到低排序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/visit [get]
-func ListPostInfosOrderByVisitedNum(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
+		infos[i] = logic.PostInfo{
+			ID:         utils.RandomInt(1, 100),
+			Cover:      "",
+			Title:      "",
+			Abstract:   "",
+			Public:     false,
+			Deleted:    false,
+			CreateTime: time.Now(),
+			ModifyTime: time.Now(),
+			StarNum:    0,
+			VisitedNum: 0,
 		}
 	}
 	response.ToResponseList(infos, len(infos))
@@ -496,6 +275,7 @@ func ListPostInfosOrderByVisitedNum(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
@@ -505,22 +285,19 @@ func ListPostInfosOrderByVisitedNum(ctx *gin.Context) {
 func ListPostInfosOrderByGrowingStar(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
+	infos := make([]logic.PostInfo, pageSize)
 	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
+		infos[i] = logic.PostInfo{
+			ID:         utils.RandomInt(1, 100),
+			Cover:      "",
+			Title:      "",
+			Abstract:   "",
+			Public:     false,
+			Deleted:    false,
+			CreateTime: time.Now(),
+			ModifyTime: time.Now(),
+			StarNum:    0,
+			VisitedNum: 0,
 		}
 	}
 	response.ToResponseList(infos, len(infos))
@@ -532,6 +309,7 @@ func ListPostInfosOrderByGrowingStar(ctx *gin.Context) {
 // @Tags 文章
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
@@ -541,22 +319,19 @@ func ListPostInfosOrderByGrowingStar(ctx *gin.Context) {
 func ListPostInfosOrderByGrowingVisited(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfoWithTags, pageSize)
+	infos := make([]logic.PostInfo, pageSize)
 	for i := range infos {
-		infos[i] = logic.PostInfoWithTags{
-			PostInfo: logic.PostInfo{
-				ID:         utils.RandomInt(1, 100),
-				Cover:      "",
-				Title:      "",
-				Abstract:   "",
-				Public:     false,
-				Deleted:    false,
-				CreateTime: time.Now(),
-				ModifyTime: time.Now(),
-				StarNum:    0,
-				VisitedNum: 0,
-			},
-			Tags: nil,
+		infos[i] = logic.PostInfo{
+			ID:         utils.RandomInt(1, 100),
+			Cover:      "",
+			Title:      "",
+			Abstract:   "",
+			Public:     false,
+			Deleted:    false,
+			CreateTime: time.Now(),
+			ModifyTime: time.Now(),
+			StarNum:    0,
+			VisitedNum: 0,
 		}
 	}
 	response.ToResponseList(infos, len(infos))

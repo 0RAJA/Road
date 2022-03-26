@@ -21,10 +21,10 @@ SELECT p.id,
        p.abstract,
        p.public,
        p.deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       p.modify_time
+       p.modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post_tag pt
          join post p
          join tags t

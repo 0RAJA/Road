@@ -18,10 +18,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 WHERE id = ?
@@ -59,10 +59,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where public = true
@@ -78,10 +78,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where public = false
@@ -97,10 +97,10 @@ SELECT id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post,
      post_num pn
 where deleted = true
@@ -115,11 +115,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
        modify_time,
-       t.id
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      tops t,
      post_num pn
@@ -135,10 +134,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where (title like ?
@@ -155,10 +154,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -174,10 +173,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -192,10 +191,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false
@@ -210,10 +209,10 @@ SELECT p.id,
        abstract,
        public,
        deleted,
-       pn.star_num,
-       pn.visited_num,
        p.create_time,
-       modify_time
+       modify_time,
+       pn.star_num,
+       pn.visited_num
 FROM post p,
      post_num pn
 where deleted = false

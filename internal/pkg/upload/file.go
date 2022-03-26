@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
 	"io"
 	"mime/multipart"
 	"os"
@@ -29,23 +30,19 @@ type uploadManager map[FileType]FileTypeor
 
 func (u uploadManager) addFileType(fileType FileTypeor) {
 	if _, ok := u[fileType.GetType()]; ok {
-		panic(RepeatedFileTypeErr)
+		panic(errcode.RepeatedFileTypeErr)
 	}
 	u[fileType.GetType()] = fileType
 }
 
-var (
-	ExtErr              = errors.New("file suffix is not supported")
-	FileSizeErr         = errors.New("exceeded maximum file limit")
-	CreatePathErr       = errors.New("failed to create save directory")
-	CompetenceErr       = errors.New("insufficient file permissions")
-	RepeatedFileTypeErr = errors.New("DuplicateFileType")
-)
+type Upload struct {
+}
 
-func Init(typeors ...FileTypeor) {
+func Init(typeors ...FileTypeor) *Upload {
 	for _, typeor := range typeors {
 		UploadManager.addFileType(typeor)
 	}
+	return new(Upload)
 }
 
 // GetFileExt 获取后缀
@@ -75,14 +72,14 @@ func checkContainExt(t FileType, ext string) (fileTypeor FileTypeor, err error) 
 	ext = strings.ToUpper(ext)
 	fileTypeor, ok := UploadManager[t]
 	if !ok {
-		return nil, ExtErr
+		return nil, errcode.ExtErr
 	}
 	for _, suffix := range fileTypeor.GetSuffix() {
 		if suffix == "*" || suffix == ext {
 			return fileTypeor, nil
 		}
 	}
-	return nil, ExtErr
+	return nil, errcode.ExtErr
 }
 
 // checkMaxSize 检查文件大小是否超出最大大小限制
