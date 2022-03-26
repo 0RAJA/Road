@@ -6,8 +6,8 @@ import (
 )
 
 type Pagination struct {
-	Page     int64 `json:"page" binding:"get=1"`             //页数
-	PageSize int64 `json:"page_size" binding:"get=1,lte=10"` //一页的大小
+	Page     int32 `json:"page" binding:"get=1"`             //页数
+	PageSize int32 `json:"page_size" binding:"get=1,lte=10"` //一页的大小
 }
 
 type Pager struct {
@@ -18,7 +18,6 @@ type Pager struct {
 
 type AddCommentParams struct {
 	PostID      int64  `json:"post_id" binding:"required,gte=1"`
-	Username    string `json:"username" bind:"required"`
 	Content     string `json:"content" bind:"required"`
 	ToCommentID int64  `json:"to_comment_id" bind:"required,gte=0"`
 }

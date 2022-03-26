@@ -50,6 +50,7 @@ func DeletePostTag(ctx *gin.Context) {
 // @Tags 文章和标签
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id query int64 true "帖子ID"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
@@ -77,6 +78,7 @@ func ListTagsByPostID(ctx *gin.Context) {
 // @Tags 文章和标签
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param tag_id query int64 true "标签ID"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"

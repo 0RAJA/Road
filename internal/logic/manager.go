@@ -10,7 +10,7 @@ import (
 )
 
 // CheckManagerName 获取是否存在对应管理员名
-func CheckManagerName(ctx *gin.Context, username string) (bool, error) {
+func CheckManagerName(ctx *gin.Context, username string) (bool, *errcode.Error) {
 	_, err := mysql.Query.GetManagerByUsername(ctx, username)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -22,7 +22,7 @@ func CheckManagerName(ctx *gin.Context, username string) (bool, error) {
 	return true, nil
 }
 
-func LoginManager(ctx *gin.Context, params LoginManagerParams) (LoginManagerReply, error) {
+func LoginManager(ctx *gin.Context, params LoginManagerParams) (LoginManagerReply, *errcode.Error) {
 	manager, err := mysql.Query.GetManagerByUsername(ctx, params.Username)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -37,7 +37,7 @@ func LoginManager(ctx *gin.Context, params LoginManagerParams) (LoginManagerRepl
 	}
 	token, refreshToken, err := generateToken(manager.Username)
 	if err != nil {
-		return LoginManagerReply{}, err
+		return LoginManagerReply{}, errcode.UnauthorizedTokenGenerateErr
 	}
 	return LoginManagerReply{
 		Manager: Manager{
@@ -49,7 +49,7 @@ func LoginManager(ctx *gin.Context, params LoginManagerParams) (LoginManagerRepl
 	}, nil
 }
 
-func AddManager(ctx *gin.Context, request AddManagerRequest) error {
+func AddManager(ctx *gin.Context, request AddManagerRequest) *errcode.Error {
 	hashPassword, err := password.HashPassword(request.Password)
 	if err != nil {
 		global.Logger.Error(err.Error())
@@ -81,7 +81,7 @@ func AddManager(ctx *gin.Context, request AddManagerRequest) error {
 	return nil
 }
 
-func UpdateManagerPassword(ctx *gin.Context, Password string) error {
+func UpdateManagerPassword(ctx *gin.Context, Password string) *errcode.Error {
 	username, _ := getUsername(ctx)
 	manager, err := mysql.Query.GetManagerByUsername(ctx, username)
 	if err != nil {
@@ -110,7 +110,7 @@ func UpdateManagerPassword(ctx *gin.Context, Password string) error {
 	return nil
 }
 
-func UpdateManagerAvatar(ctx *gin.Context, AvatarUrl string) error {
+func UpdateManagerAvatar(ctx *gin.Context, AvatarUrl string) *errcode.Error {
 	username, _ := getUsername(ctx)
 	err := mysql.Query.UpdateManagerAvatar(ctx, db.UpdateManagerAvatarParams{
 		AvatarUrl: AvatarUrl,
@@ -123,7 +123,7 @@ func UpdateManagerAvatar(ctx *gin.Context, AvatarUrl string) error {
 	return nil
 }
 
-func DeleteManager(ctx *gin.Context) error {
+func DeleteManager(ctx *gin.Context) *errcode.Error {
 	username, _ := getUsername(ctx)
 	manager, err := mysql.Query.GetManagerByUsername(ctx, username)
 	if err != nil {

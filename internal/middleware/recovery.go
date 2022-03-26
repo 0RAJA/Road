@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/pkg/email"
+	"github.com/0RAJA/Road/internal/pkg/times"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net"
@@ -35,7 +36,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 			if err := recover(); err != nil {
 				err1 := defailtMailer.SendMail( //短信通知
 					global.AllSetting.Email.To,
-					fmt.Sprintf("异常抛出，发生时间: %d", time.Now().Unix()),
+					fmt.Sprintf("异常抛出，发生时间: %v", time.Now().Format(times.LayoutDateTime)),
 					fmt.Sprintf("错误信息: %v", err),
 				)
 				if err1 != nil {

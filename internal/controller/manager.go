@@ -1,12 +1,21 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
 	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"time"
 )
+
+func checkUsername(username string) *errcode.Error {
+	if len(username) <= 0 || len(username) > global.AllSetting.Rule.UsernameLen {
+		return errcode.ErrUsernameLengthErr
+	}
+	return nil
+}
 
 // CheckManagerName
 // @Summary 检查管理员名是否存在
@@ -14,13 +23,25 @@ import (
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param username path string true "用户名 3<=len<=50"
 // @Success 200 {bool} bool "返回是否存在此管理员"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /manager/check/{username} [get]
 func CheckManagerName(ctx *gin.Context) {
-
+	response := app.NewResponse(ctx)
+	username := app.GetPath(ctx, "username")
+	if err := checkUsername(username); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	ok, err := logic.CheckManagerName(ctx, username)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(ok)
 }
 
 // LoginManager
@@ -29,6 +50,7 @@ func CheckManagerName(ctx *gin.Context) {
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param username body string true "用户名 3<=len<=50"
 // @Param password body string true "密码 6<=len<=32"
 // @Success 200 {object} logic.LoginManagerReply "返回用户信息和授权码"
@@ -63,6 +85,7 @@ func LoginManager(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param username body int64 true "用户名 3<=len<=50"
 // @Param password body string true "密码 6<=len<=32"
 // @Param avatar_url body string true "头像链接"
@@ -82,6 +105,7 @@ func AddManager(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param password body string true "新密码 6<=len<=32"
 // @Param avatar_url body string true "新头像链接"
 // @Success 200 {string} string ""
@@ -100,6 +124,7 @@ func UpdateManager(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param username path string true "用户名"
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
@@ -116,6 +141,7 @@ func DeleteManager(ctx *gin.Context) {
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"

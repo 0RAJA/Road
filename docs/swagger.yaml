@@ -84,7 +84,7 @@ definitions:
     properties:
       list:
         items:
-          $ref: '#/definitions/logic.PostInfoWithTags'
+          $ref: '#/definitions/logic.PostInfo'
         type: array
       pager:
         $ref: '#/definitions/logic.Pager'
@@ -224,24 +224,6 @@ definitions:
         description: 访问数
         type: integer
     type: object
-  logic.PostInfoWithTags:
-    properties:
-      postInfo:
-        $ref: '#/definitions/logic.PostInfo'
-      tags:
-        items:
-          $ref: '#/definitions/logic.Tag'
-        type: array
-    type: object
-  logic.PostWithTags:
-    properties:
-      post:
-        $ref: '#/definitions/logic.Post'
-      tags:
-        items:
-          $ref: '#/definitions/logic.Tag'
-        type: array
-    type: object
   logic.ReToken:
     properties:
       expiredAt:
@@ -256,9 +238,6 @@ definitions:
       token:
         $ref: '#/definitions/logic.Token'
         description: Token
-      user:
-        $ref: '#/definitions/logic.UserInfo'
-        description: 用户信息
     type: object
   logic.Tag:
     properties:
@@ -517,6 +496,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -548,6 +532,11 @@ paths:
       - application/json
       description: 修改管理员头像和密码，不输入表示不修改
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer 用户令牌
         in: header
         name: Authorization
@@ -594,6 +583,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 用户名
         in: path
         name: username
@@ -617,12 +611,51 @@ paths:
       summary: 删除管理员
       tags:
       - 管理员
+  /manager/check/{username}:
+    get:
+      consumes:
+      - application/json
+      description: 检查管理员名是否存在
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名 3<=len<=50
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回是否存在此管理员
+          schema:
+            type: bool
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 检查管理员名是否存在
+      tags:
+      - 管理员
   /manager/create:
     post:
       consumes:
       - application/json
       description: 添加一个管理员的信息
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer 用户令牌
         in: header
         name: Authorization
@@ -670,6 +703,11 @@ paths:
       - application/json
       description: 用于管理员使用账号和密码进行登录
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 用户名 3<=len<=50
         in: body
         name: username
@@ -856,7 +894,7 @@ paths:
         "200":
           description: 返回一个帖子的ID,封面，标题，简介，是否公开,是否删除以及,创建时间和修改时间以及点赞数和访问数和其对应标签的信息
           schema:
-            $ref: '#/definitions/logic.PostInfoWithTags'
+            $ref: '#/definitions/logic.PostInfo'
         "400":
           description: 请求错误
           schema:
@@ -1093,7 +1131,7 @@ paths:
         "200":
           description: 获取一个帖子的ID,封面，标题，简介，内容,是否公开,是否删除以及,创建时间,修改时间,点赞数和浏览数
           schema:
-            $ref: '#/definitions/logic.PostWithTags'
+            $ref: '#/definitions/logic.Post'
         "400":
           description: 请求错误
           schema:
@@ -1298,6 +1336,11 @@ paths:
       - application/json
       description: 列出一个标签对应的所有帖子简介信息
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 标签ID
         in: query
         name: tag_id
@@ -1335,6 +1378,11 @@ paths:
       - application/json
       description: 列出一个帖子对应的所有标签
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 帖子ID
         in: query
         name: post_id
@@ -1366,11 +1414,11 @@ paths:
       summary: 列出一个帖子对应的所有标签
       tags:
       - 文章和标签
-  /star/{post_id}:
-    delete:
+  /star:
+    put:
       consumes:
       - application/json
-      description: 通过post_id取消用户对于某个帖子的点赞
+      description: 用户对某个帖子点赞或取消点赞
       parameters:
       - description: Bearer 用户令牌
         in: header
@@ -1378,10 +1426,20 @@ paths:
         required: true
         type: string
       - description: 帖子ID
-        in: path
+        in: body
         name: post_id
         required: true
-        type: integer
+        schema:
+          type: integer
+      - description: 点赞状态 Enums(true,false)
+        enum:
+        - true
+        - false
+        in: body
+        name: state
+        required: true
+        schema:
+          type: boolean
       produces:
       - application/json
       responses:
@@ -1397,9 +1455,10 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/errcode.Error'
-      summary: 取消用户对于某个帖子的点赞
+      summary: 用户对某个帖子点赞或取消点赞
       tags:
       - user_star
+  /star/{post_id}:
     get:
       consumes:
       - application/json
@@ -1433,45 +1492,17 @@ paths:
       summary: 获取用户对于某个帖子的点赞情况
       tags:
       - user_star
-    put:
-      consumes:
-      - application/json
-      description: 设置用户对于某个帖子的点赞
-      parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 帖子ID
-        in: path
-        name: post_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 用户对某个帖子点赞
-      tags:
-      - user_star
   /tag:
     get:
       consumes:
       - application/json
       description: 列出标签
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -1508,12 +1539,6 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 标签ID
-        in: body
-        name: tag_id
-        required: true
-        schema:
-          type: integer
       - description: 标签名
         in: body
         name: tag_name
@@ -1543,6 +1568,11 @@ paths:
       - application/json
       description: 修改一个标签的名字
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 标签ID
         in: body
         name: tag_id
@@ -1607,6 +1637,40 @@ paths:
       summary: 删除一个标签
       tags:
       - 标签
+  /tag/check{tag_name}:
+    get:
+      consumes:
+      - application/json
+      description: 判断标签名是否存在
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签名
+        in: path
+        name: tag_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子对应的所有标签的信息
+          schema:
+            $ref: '#/definitions/logic.ListTagsReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 判断标签名是否存在
+      tags:
+      - 标签
   /token/get:
     get:
       consumes:
@@ -1635,6 +1699,19 @@ paths:
       consumes:
       - application/json
       description: 将过期的token和未过期的retoken换取新的token
+      parameters:
+      - description: 过期的token
+        in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - description: 未过期的刷新token
+        in: body
+        name: re_token
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -1674,7 +1751,7 @@ paths:
         - image
         - file
         in: body
-        name: type
+        name: file_type
         required: true
         schema:
           type: string
@@ -1718,7 +1795,7 @@ paths:
         "200":
           description: 用户信息
           schema:
-            $ref: '#/definitions/logic.UserInfo'
+            $ref: '#/definitions/logic.User'
         "400":
           description: 请求错误
           schema:
@@ -1778,6 +1855,14 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:

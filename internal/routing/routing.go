@@ -47,7 +47,7 @@ func NewRouting() *gin.Engine {
 		managerAuth.PUT("/delete", controller.ModifyPostDeleted)
 		managerAuth.PUT("/public", controller.ModifyPostPublic)
 		managerAuth.POST("/create", controller.AddPost)
-		post.DELETE("/:post_id", controller.RealDeletePost)
+		managerAuth.DELETE("/:post_id", controller.RealDeletePost)
 	}
 	postTag := r.Group("/postTag")
 	{
@@ -75,23 +75,21 @@ func NewRouting() *gin.Engine {
 	}
 	user := r.Group("/user")
 	{
-		loginAuth := user.Use(mid.AuthMiddleware())
-		managerAuth := loginAuth.Use(mid.ManagerAuth())
-		loginAuth.GET("/:username", controller.GetUserInfo)
+		managerAuth := user.Use(mid.AuthMiddleware(), mid.ManagerAuth())
+		managerAuth.GET("/:username", controller.GetUserInfo)
 		managerAuth.GET("/users", controller.ListUsers)
 		managerAuth.GET("/createTime", controller.ListUsersByCreateTime)
 	}
 	star := r.Group("/star", mid.AuthMiddleware())
 	{
 		star.GET("/:post_id", controller.GetUserStar)
-		star.PUT("/:post_id", controller.UserStarPost)
-		star.DELETE("/:post_id", controller.DeleteUserStar)
+		star.PUT("/", controller.UserStarPost)
 	}
 	views := r.Group("/views")
 	{
+		views.GET("/post/:post_id", controller.GetGrowViewsByPostID)
 		managerAuth := views.Use(mid.AuthMiddleware(), mid.ManagerAuth())
 		managerAuth.GET("/all", controller.ListViewsByCreateTime)
-		views.GET("/post/:post_id", controller.GetGrowViewsByPostID)
 	}
 	r.POST("/upload", mid.AuthMiddleware(), mid.ManagerAuth(), controller.Upload)
 	return r

@@ -48,6 +48,7 @@ func DeleteTag(ctx *gin.Context) {
 // @Tags 标签
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param tag_id body int64 true "标签ID"
 // @Param tag_name body string true "更改后名字"
 // @Success 200 {string} string ""
@@ -65,6 +66,7 @@ func UpdateTag(ctx *gin.Context) {
 // @Tags 标签
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListTagsReply "返回帖子对应的所有标签的信息"
@@ -91,6 +93,7 @@ func ListTags(ctx *gin.Context) {
 // @Tags 标签
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param tag_name path string true "标签名"
 // @Success 200 {object} logic.ListTagsReply "返回帖子对应的所有标签的信息"
 // @Failure 400 {object} errcode.Error "请求错误"

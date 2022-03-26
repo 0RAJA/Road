@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteUserStar(ctx *gin.Context, postID int64) error {
+func DeleteUserStar(ctx *gin.Context, postID int64) *errcode.Error {
 	username, _ := getUsername(ctx)
 	err := redis.Query.SetPostStar(ctx, postID, username, false)
 	if err != nil {
@@ -19,7 +19,7 @@ func DeleteUserStar(ctx *gin.Context, postID int64) error {
 	return nil
 }
 
-func UserStarPost(ctx *gin.Context, postID int64) error {
+func UserStarPost(ctx *gin.Context, postID int64) *errcode.Error {
 	username, _ := getUsername(ctx)
 	err := redis.Query.SetPostStar(ctx, postID, username, true)
 	if err != nil {
@@ -29,7 +29,7 @@ func UserStarPost(ctx *gin.Context, postID int64) error {
 	return nil
 }
 
-func GetUserStar(ctx *gin.Context, postID int64) (bool, error) {
+func GetUserStar(ctx *gin.Context, postID int64) (bool, *errcode.Error) {
 	username, _ := getUsername(ctx)
 	result, err := redis.Query.GetPostStarByPostIDAndUserName(ctx, postID, username)
 	if err != nil {

@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/0RAJA/Bank/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
 	"github.com/google/uuid"
 	"time"
 )

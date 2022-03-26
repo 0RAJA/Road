@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CheckTagName(ctx *gin.Context, tagName string) (bool, error) {
+func CheckTagName(ctx *gin.Context, tagName string) (bool, *errcode.Error) {
 	_, err := mysql.Query.GetTagByName(ctx, tagName)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -21,7 +21,7 @@ func CheckTagName(ctx *gin.Context, tagName string) (bool, error) {
 	return true, nil
 }
 
-func AddTag(ctx *gin.Context, params AddTagParams) error {
+func AddTag(ctx *gin.Context, params AddTagParams) *errcode.Error {
 	err := mysql.Query.CreateTag(ctx, db.CreateTagParams{
 		ID:      snowflake.GetID(),
 		TagName: params.TagName,
@@ -33,7 +33,7 @@ func AddTag(ctx *gin.Context, params AddTagParams) error {
 	return nil
 }
 
-func DeleteTag(ctx *gin.Context, tagID int64) error {
+func DeleteTag(ctx *gin.Context, tagID int64) *errcode.Error {
 	err := mysql.Query.DeleteTagByTagID(ctx, tagID)
 	if err != nil {
 		global.Logger.Error(err.Error())
@@ -42,7 +42,7 @@ func DeleteTag(ctx *gin.Context, tagID int64) error {
 	return nil
 }
 
-func UpdateTag(ctx *gin.Context, params UpdateTagParams) error {
+func UpdateTag(ctx *gin.Context, params UpdateTagParams) *errcode.Error {
 	err := mysql.Query.UpdateTag(ctx, db.UpdateTagParams{
 		TagName: params.TagName,
 		ID:      params.TagID,
@@ -54,7 +54,7 @@ func UpdateTag(ctx *gin.Context, params UpdateTagParams) error {
 	return nil
 }
 
-func ListTags(ctx *gin.Context, offsite, limit int32) ([]db.Tag, error) {
+func ListTags(ctx *gin.Context, offsite, limit int32) ([]db.Tag, *errcode.Error) {
 	tags, err := mysql.Query.ListTag(ctx, db.ListTagParams{
 		Offset: offsite,
 		Limit:  limit,

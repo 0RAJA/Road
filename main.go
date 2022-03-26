@@ -6,12 +6,13 @@ import (
 	"github.com/0RAJA/Road/internal/dao/mysql"
 	"github.com/0RAJA/Road/internal/dao/redis"
 	"github.com/0RAJA/Road/internal/global"
+	"github.com/0RAJA/Road/internal/pkg/app"
 	"github.com/0RAJA/Road/internal/pkg/logger"
 	"github.com/0RAJA/Road/internal/pkg/setting"
 	"github.com/0RAJA/Road/internal/pkg/snowflake"
 	"github.com/0RAJA/Road/internal/pkg/token"
+	"github.com/0RAJA/Road/internal/pkg/upload"
 	"github.com/0RAJA/Road/internal/routing"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -99,15 +100,18 @@ func SetupSetting() {
 	err = readSetting("Token", &(global.AllSetting.Token))
 	err = readSetting("Pagelines", &(global.AllSetting.Pagelines))
 	err = readSetting("Upload", &(global.AllSetting.Upload))
+	err = readSetting("Github", &(global.AllSetting.Github))
+	err = readSetting("Rule", &(global.AllSetting.Rule))
 	myPanic(err)
 	err = snowflake.Init(global.AllSetting.App.StartTime, global.AllSetting.App.Format, 1)
 	myPanic(err)
 	global.Maker, err = token.NewPasetoMaker([]byte(global.AllSetting.Token.Key))
 	myPanic(err)
 	initLog()
-	log.Println(global.AllSetting)
+	initUpload()
 	mysql.Init()
 	redis.Init()
+	app.Init(global.AllSetting.Pagelines.DefaultPageSize, global.AllSetting.Pagelines.MaxPageSize, global.AllSetting.Pagelines.PageKey, global.AllSetting.Pagelines.PageSizeKey)
 }
 func myPanic(err error) {
 	if err != nil {
@@ -127,4 +131,10 @@ func initLog() {
 		HighLevelFile: global.AllSetting.Log.HighLevelFile,
 	})
 	global.Logger = logger.NewLogger(global.AllSetting.Log.Level)
+}
+
+func initUpload() {
+	image := upload.NewType(upload.FileType(global.AllSetting.Upload.Image.Type), global.AllSetting.Upload.Image.Suffix, global.AllSetting.Upload.Image.MaxSize, global.AllSetting.Upload.Image.UrlPrefix, global.AllSetting.Upload.Image.LocalPath)
+	file := upload.NewType(upload.FileType(global.AllSetting.Upload.File.Type), global.AllSetting.Upload.File.Suffix, global.AllSetting.Upload.File.MaxSize, global.AllSetting.Upload.File.UrlPrefix, global.AllSetting.Upload.File.LocalPath)
+	global.Upload = upload.Init(image, file)
 }

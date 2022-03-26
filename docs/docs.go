@@ -297,6 +297,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "页码 default 1",
                         "name": "page",
@@ -351,6 +358,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "新密码 6\u003c=len\u003c=32",
                         "name": "password",
                         "in": "body",
@@ -391,6 +405,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/check/{username}": {
+            "get": {
+                "description": "检查管理员名是否存在",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "检查管理员名是否存在",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名 3\u003c=len\u003c=50",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回是否存在此管理员",
+                        "schema": {
+                            "type": "bool"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/create": {
             "post": {
                 "description": "添加一个管理员的信息",
@@ -405,6 +470,13 @@ const docTemplate = `{
                 ],
                 "summary": "添加管理员",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
@@ -477,6 +549,13 @@ const docTemplate = `{
                 "summary": "管理员登录",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "用户名 3\u003c=len\u003c=50",
                         "name": "username",
                         "in": "body",
@@ -531,6 +610,13 @@ const docTemplate = `{
                 ],
                 "summary": "删除管理员",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
@@ -752,7 +838,7 @@ const docTemplate = `{
                     "200": {
                         "description": "返回一个帖子的ID,封面，标题，简介，是否公开,是否删除以及,创建时间和修改时间以及点赞数和访问数和其对应标签的信息",
                         "schema": {
-                            "$ref": "#/definitions/logic.PostInfoWithTags"
+                            "$ref": "#/definitions/logic.PostInfo"
                         }
                     },
                     "400": {
@@ -1105,7 +1191,7 @@ const docTemplate = `{
                     "200": {
                         "description": "获取一个帖子的ID,封面，标题，简介，内容,是否公开,是否删除以及,创建时间,修改时间,点赞数和浏览数",
                         "schema": {
-                            "$ref": "#/definitions/logic.PostWithTags"
+                            "$ref": "#/definitions/logic.Post"
                         }
                     },
                     "400": {
@@ -1471,6 +1557,13 @@ const docTemplate = `{
                 "summary": "列出一个标签对应的所有帖子简介信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "标签ID",
                         "name": "tag_id",
@@ -1527,6 +1620,13 @@ const docTemplate = `{
                 "summary": "列出一个帖子对应的所有标签",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "帖子ID",
                         "name": "post_id",
@@ -1551,6 +1651,72 @@ const docTemplate = `{
                         "description": "返回帖子对应的所有标签的信息",
                         "schema": {
                             "$ref": "#/definitions/logic.ListTagsReply"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/star": {
+            "put": {
+                "description": "用户对某个帖子点赞或取消点赞",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_star"
+                ],
+                "summary": "用户对某个帖子点赞或取消点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "帖子ID",
+                        "name": "post_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "enum": [
+                            true,
+                            false
+                        ],
+                        "description": "点赞状态 Enums(true,false)",
+                        "name": "state",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -1617,104 +1783,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "description": "设置用户对于某个帖子的点赞",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user_star"
-                ],
-                "summary": "用户对某个帖子点赞",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "帖子ID",
-                        "name": "post_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "通过post_id取消用户对于某个帖子的点赞",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user_star"
-                ],
-                "summary": "取消用户对于某个帖子的点赞",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "帖子ID",
-                        "name": "post_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
             }
         },
         "/tag": {
@@ -1731,6 +1799,13 @@ const docTemplate = `{
                 ],
                 "summary": "列出标签",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "页码 default 1",
@@ -1778,6 +1853,13 @@ const docTemplate = `{
                 ],
                 "summary": "修改一个标签的名字",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "标签ID",
                         "name": "tag_id",
@@ -1839,15 +1921,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "标签ID",
-                        "name": "tag_id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
                         "description": "标签名",
                         "name": "tag_name",
                         "in": "body",
@@ -1862,6 +1935,57 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/tag/check{tag_name}": {
+            "get": {
+                "description": "判断标签名是否存在",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签"
+                ],
+                "summary": "判断标签名是否存在",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标签名",
+                        "name": "tag_name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回帖子对应的所有标签的信息",
+                        "schema": {
+                            "$ref": "#/definitions/logic.ListTagsReply"
                         }
                     },
                     "400": {
@@ -1978,6 +2102,26 @@ const docTemplate = `{
                     "auth"
                 ],
                 "summary": "刷新token",
+                "parameters": [
+                    {
+                        "description": "过期的token",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "未过期的刷新token",
+                        "name": "re_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "返回用户信息和新的token",
@@ -2034,7 +2178,7 @@ const docTemplate = `{
                             "file"
                         ],
                         "description": "文件类型 Enums(image,file)",
-                        "name": "type",
+                        "name": "file_type",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2140,6 +2284,18 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码 default 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量 default and max 10",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2197,7 +2353,7 @@ const docTemplate = `{
                     "200": {
                         "description": "用户信息",
                         "schema": {
-                            "$ref": "#/definitions/logic.UserInfo"
+                            "$ref": "#/definitions/logic.User"
                         }
                     },
                     "400": {
@@ -2447,7 +2603,7 @@ const docTemplate = `{
                 "list": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/logic.PostInfoWithTags"
+                        "$ref": "#/definitions/logic.PostInfo"
                     }
                 },
                 "pager": {
@@ -2646,34 +2802,6 @@ const docTemplate = `{
                 }
             }
         },
-        "logic.PostInfoWithTags": {
-            "type": "object",
-            "properties": {
-                "postInfo": {
-                    "$ref": "#/definitions/logic.PostInfo"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/logic.Tag"
-                    }
-                }
-            }
-        },
-        "logic.PostWithTags": {
-            "type": "object",
-            "properties": {
-                "post": {
-                    "$ref": "#/definitions/logic.Post"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/logic.Tag"
-                    }
-                }
-            }
-        },
         "logic.ReToken": {
             "type": "object",
             "properties": {
@@ -2693,10 +2821,6 @@ const docTemplate = `{
                 "token": {
                     "description": "Token",
                     "$ref": "#/definitions/logic.Token"
-                },
-                "user": {
-                    "description": "用户信息",
-                    "$ref": "#/definitions/logic.UserInfo"
                 }
             }
         },

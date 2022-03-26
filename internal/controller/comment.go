@@ -1,12 +1,21 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
+	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
-	"time"
 )
+
+func checkComment(comment string) *errcode.Error {
+	if len(comment) <= 0 || len(comment) > global.AllSetting.Rule.CommentLen {
+		return errcode.ErrCommentLengthErr
+	}
+	return nil
+}
 
 // AddComment
 // @Summary 创建评论
@@ -25,6 +34,20 @@ import (
 // @Router /comment [post]
 func AddComment(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	var params logic.AddCommentParams
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := checkComment(params.Content); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	if err := logic.AddComment(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -42,6 +65,16 @@ func AddComment(ctx *gin.Context) {
 // @Router /comment/{comment_id} [delete]
 func DeleteComment(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	str := app.GetPath(ctx, "comment_id")
+	commentID := conversion.AtoInt64Must(str)
+	if commentID <= 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	if err := logic.DeleteComment(ctx, commentID); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -60,6 +93,20 @@ func DeleteComment(ctx *gin.Context) {
 // @Router /comment [put]
 func ModifyComment(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	var params logic.ModifyCommentParams
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := checkComment(params.Content); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	if err := logic.ModifyComment(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -79,19 +126,21 @@ func ModifyComment(ctx *gin.Context) {
 // @Router /comment [get]
 func ListComments(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	comments := make([]logic.Comment, pageSize)
-	for i := range comments {
-		comments[i] = logic.Comment{
-			ID:            utils.RandomInt(1, 100),
-			PostID:        utils.RandomInt(1, 100),
-			Username:      utils.RandomOwner(),
-			Content:       utils.RandomString(100),
-			ToCommentID:   utils.RandomInt(1, 100),
-			CreateTime:    time.Now(),
-			ModifyTime:    time.Now(),
-			DepositoryUrl: utils.RandomString(10),
-		}
+	params := logic.ListCommentByPostIDParams{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
+	}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	comments, err := logic.ListComments(ctx, params.PostID, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
 	}
 	response.ToResponseList(comments, len(comments))
 }

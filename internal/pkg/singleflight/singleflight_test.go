@@ -1,7 +1,7 @@
 package singleflight
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/require"
 	"sync"
 	"testing"
 	"time"
@@ -14,15 +14,11 @@ func TestGroup_Do(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func(n int) {
 			defer wg.Done()
-			result, err := redis.Do("redis", func() (interface{}, error) {
+			_, err := redis.Do("redis", func() (interface{}, error) {
 				time.Sleep(time.Second)
 				return n, nil
 			})
-			if err != nil {
-				fmt.Println("err:", err)
-				return
-			}
-			fmt.Println(result)
+			require.NoError(t, err)
 		}(i)
 	}
 	wg.Wait()

@@ -23,6 +23,10 @@ func (s StrTo) Int64() (int64, error) {
 	v, err := strconv.ParseInt(s.String(), 10, 64)
 	return v, err
 }
+func (s StrTo) Int32() (int32, error) {
+	v, err := strconv.ParseInt(s.String(), 10, 32)
+	return int32(v), err
+}
 func (s StrTo) MustInt64() int64 {
 	v, _ := s.Int64()
 	return v
@@ -34,5 +38,10 @@ func (s StrTo) UInt32() (uint32, error) {
 
 func (s StrTo) MustUInt32() uint32 {
 	v, _ := s.UInt32()
+	return v
+}
+
+func (s StrTo) MustInt32() int32 {
+	v, _ := s.Int32()
 	return v
 }

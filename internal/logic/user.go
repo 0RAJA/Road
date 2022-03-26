@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func GetUserInfo(ctx *gin.Context, username string) (User, error) {
+func GetUserInfo(ctx *gin.Context, username string) (User, *errcode.Error) {
 	user, err := mysql.Query.GetUserByUsername(ctx, username)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -21,7 +21,7 @@ func GetUserInfo(ctx *gin.Context, username string) (User, error) {
 	return User(user), nil
 }
 
-func ListUsers(ctx *gin.Context, offsite, limit int32) ([]User, error) {
+func ListUsers(ctx *gin.Context, offsite, limit int32) ([]User, *errcode.Error) {
 	users, err := mysql.Query.ListUser(ctx, db.ListUserParams{
 		Offset: offsite,
 		Limit:  limit,
@@ -37,7 +37,7 @@ func ListUsers(ctx *gin.Context, offsite, limit int32) ([]User, error) {
 	return results, nil
 }
 
-func ListUsersByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]User, error) {
+func ListUsersByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]User, *errcode.Error) {
 	users, err := mysql.Query.ListUserByCreateTime(ctx, db.ListUserByCreateTimeParams{
 		CreateTime:   startTime,
 		CreateTime_2: endTime,
@@ -46,7 +46,7 @@ func ListUsersByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offse
 	})
 	if err != nil {
 		global.Logger.Error(err.Error())
-		return nil, err
+		return nil, errcode.ServerErr
 	}
 	results := make([]User, len(users))
 	for i := range users {

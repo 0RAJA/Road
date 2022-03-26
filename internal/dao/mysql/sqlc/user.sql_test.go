@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -14,7 +13,7 @@ func TestQueries_GetUserByUsername(t *testing.T) {
 		Username:      utils.RandomOwner(),
 		AvatarUrl:     utils.RandomOwner(),
 		DepositoryUrl: utils.RandomOwner(),
-		Address:       sql.NullString{},
+		Address:       "",
 	}
 	testCreateUser(t, arg)
 	user, err := TestQueries.GetUserByUsername(context.Background(), arg.Username)
@@ -38,7 +37,7 @@ func testCreateUser2(t *testing.T) User {
 		Username:      utils.RandomOwner(),
 		AvatarUrl:     utils.RandomOwner(),
 		DepositoryUrl: utils.RandomOwner(),
-		Address:       sql.NullString{},
+		Address:       "",
 	}
 	err := TestQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
@@ -65,7 +64,7 @@ func TestQueries_CreateUser(t *testing.T) {
 		Username:      utils.RandomOwner(),
 		AvatarUrl:     utils.RandomOwner(),
 		DepositoryUrl: utils.RandomOwner(),
-		Address:       sql.NullString{},
+		Address:       "",
 	}
 	err := TestQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
@@ -81,14 +80,14 @@ func TestQueries_UpdateUser(t *testing.T) {
 		Username:      utils.RandomOwner(),
 		AvatarUrl:     utils.RandomOwner(),
 		DepositoryUrl: utils.RandomOwner(),
-		Address:       sql.NullString{},
+		Address:       "",
 	}
 	testCreateUser(t, arg)
 	arg2 := UpdateUserParams{
 		Username:      utils.RandomOwner(),
 		AvatarUrl:     utils.RandomOwner(),
 		DepositoryUrl: utils.RandomOwner(),
-		Address:       sql.NullString{},
+		Address:       "",
 	}
 	err := TestQueries.UpdateUser(context.Background(), arg2)
 	require.NoError(t, err)
@@ -108,7 +107,7 @@ func TestQueries_ListUser(t *testing.T) {
 			Username:      utils.RandomOwner(),
 			AvatarUrl:     utils.RandomOwner(),
 			DepositoryUrl: utils.RandomOwner(),
-			Address:       sql.NullString{},
+			Address:       "",
 		}
 		testCreateUser(t, users[i])
 	}
@@ -131,7 +130,7 @@ func TestQueries_ListUserByCreateTime(t *testing.T) {
 			Username:      utils.RandomOwner(),
 			AvatarUrl:     utils.RandomOwner(),
 			DepositoryUrl: utils.RandomOwner(),
-			Address:       sql.NullString{},
+			Address:       "",
 		}
 		testCreateUser(t, users[i])
 		time.Sleep(time.Millisecond * 100)

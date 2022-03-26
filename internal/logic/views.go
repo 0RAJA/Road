@@ -28,7 +28,7 @@ func EnduranceViews(ctx *gin.Context) {
 	}
 }
 
-func ListViewsByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]db.View, error) {
+func ListViewsByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]db.View, *errcode.Error) {
 	views, err := mysql.Query.ListViewByCreateTime(ctx, db.ListViewByCreateTimeParams{
 		CreateTime:   startTime,
 		CreateTime_2: endTime,
@@ -42,7 +42,13 @@ func ListViewsByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offse
 	return views, nil
 }
 
-func GetGrowViewsByPostID(ctx *gin.Context, postID int64) (int64, error) {
+func AddPostViews(ctx *gin.Context, postID int64) {
+	if err := redis.Query.AddVisitedPostNum(ctx, postID); err != nil {
+		global.Logger.Error(err.Error())
+	}
+}
+
+func GetGrowViewsByPostID(ctx *gin.Context, postID int64) (int64, *errcode.Error) {
 	view, err := redis.Query.GetVisitedPostNum(ctx, postID)
 	if err != nil {
 		return 0, errcode.ServerErr

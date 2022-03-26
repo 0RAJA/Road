@@ -13,6 +13,17 @@ type AllSettings struct {
 	Pagelines Pagelines `yaml:"Pagelines"`
 	Token     Token     `yaml:"Token"`
 	Github    Github    `yaml:"Github"`
+	Rule      Rule      `yaml:"Rule"`
+}
+
+type Rule struct {
+	UsernameLen      int    `yaml:"UsernameLen"`
+	Password         int    `yaml:"Password"`
+	DefaultAvatarUrl string `yaml:"DefaultAvatarUrl"`
+	CommentLen       int    `yaml:"CommentLen"`
+	TitleLen         int    `yaml:"TitleLen"`
+	AbstractLen      int    `yaml:"AbstractLen"`
+	TagLen           int    `yaml:"TagLen"`
 }
 
 type Github struct {
@@ -22,10 +33,10 @@ type Github struct {
 }
 
 type Pagelines struct {
-	DefaultPageSize int    `yaml:"DefaultPageSize"`
+	DefaultPageSize int32  `yaml:"DefaultPageSize"`
 	PageKey         string `yaml:"PageKey"`
 	PageSizeKey     string `yaml:"PageSizeKey"`
-	DefaultPage     int    `yaml:"DefaultPage"`
+	MaxPageSize     int32  `yaml:"MaxPageSize"`
 }
 
 type File struct {

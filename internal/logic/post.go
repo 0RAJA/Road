@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func AddPost(ctx *gin.Context, request PostRequest) error {
+func AddPost(ctx *gin.Context, request PostRequest) *errcode.Error {
 	arg := db.CreatePostParams{
 		ID:       snowflake.GetID(),
 		Cover:    request.Cover,
@@ -35,7 +35,7 @@ func AddPost(ctx *gin.Context, request PostRequest) error {
 	return nil
 }
 
-func UpdatePost(ctx *gin.Context, params UpdatePostParams) error {
+func UpdatePost(ctx *gin.Context, params UpdatePostParams) *errcode.Error {
 	_, err := mysql.Query.GetPostByPostID(ctx, params.PostID)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -63,7 +63,7 @@ func UpdatePost(ctx *gin.Context, params UpdatePostParams) error {
 	return nil
 }
 
-func GetPost(ctx *gin.Context, postID int64) (Post, error) {
+func GetPost(ctx *gin.Context, postID int64) (Post, *errcode.Error) {
 	isRoot := getRoot(ctx)
 	post, err := getPost(ctx, postID)
 	if err != nil {
@@ -72,11 +72,12 @@ func GetPost(ctx *gin.Context, postID int64) (Post, error) {
 	if !post.Public && !isRoot {
 		return Post{}, errcode.InsufficientPermissionsErr
 	}
+	AddPostViews(ctx, postID)
 	return post, nil
 }
 
 //同一时间内只会有一次请求
-func getPost(ctx *gin.Context, postID int64) (Post, error) {
+func getPost(ctx *gin.Context, postID int64) (Post, *errcode.Error) {
 	result, err := doOnce.Do(getPostKey(postID), func() (interface{}, error) {
 		var (
 			ret Post
@@ -115,13 +116,13 @@ func getPost(ctx *gin.Context, postID int64) (Post, error) {
 		return ret, nil
 	})
 	if err != nil {
-		return Post{}, err
+		return Post{}, err.(*errcode.Error)
 	}
 	return result.(Post), nil
 }
 
 //同一时间内只会有一次请求
-func getPostInfo(ctx *gin.Context, postID int64) (PostInfo, error) {
+func getPostInfo(ctx *gin.Context, postID int64) (PostInfo, *errcode.Error) {
 	result, err := doOnce.Do(getPostInfoKey(postID), func() (interface{}, error) {
 		var (
 			ret PostInfo
@@ -161,12 +162,12 @@ func getPostInfo(ctx *gin.Context, postID int64) (PostInfo, error) {
 		return ret, nil
 	})
 	if err != nil {
-		return PostInfo{}, err
+		return PostInfo{}, err.(*errcode.Error)
 	}
 	return result.(PostInfo), nil
 }
 
-func GetPostInfo(ctx *gin.Context, postID int64) (PostInfo, error) {
+func GetPostInfo(ctx *gin.Context, postID int64) (PostInfo, *errcode.Error) {
 	isRoot := getRoot(ctx)
 	postInfo, err := getPostInfo(ctx, postID)
 	if err != nil {
@@ -178,7 +179,7 @@ func GetPostInfo(ctx *gin.Context, postID int64) (PostInfo, error) {
 	return postInfo, nil
 }
 
-func ModifyPostDeleted(ctx *gin.Context, params ModifyPostDeletedParam) error {
+func ModifyPostDeleted(ctx *gin.Context, params ModifyPostDeletedParam) *errcode.Error {
 	postInfo, err := mysql.Query.GetPostInfoByPostID(ctx, params.PostID)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -205,7 +206,7 @@ func ModifyPostDeleted(ctx *gin.Context, params ModifyPostDeletedParam) error {
 	return nil
 }
 
-func RealDeletePost(ctx *gin.Context, postID int64) error {
+func RealDeletePost(ctx *gin.Context, postID int64) *errcode.Error {
 	postInfo, err := mysql.Query.GetPostInfoByPostID(ctx, postID)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -229,7 +230,7 @@ func RealDeletePost(ctx *gin.Context, postID int64) error {
 	return nil
 }
 
-func ModifyPostPublic(ctx *gin.Context, params ModifyPostPublicParam) error {
+func ModifyPostPublic(ctx *gin.Context, params ModifyPostPublicParam) *errcode.Error {
 	postInfo, err := mysql.Query.GetPostInfoByPostID(ctx, params.PostID)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -257,7 +258,7 @@ func ModifyPostPublic(ctx *gin.Context, params ModifyPostPublicParam) error {
 }
 
 // ListPostInfos options: Enums(infos,public,private,deleted,topping,star_num,visited_num)
-func ListPostInfos(ctx *gin.Context, options string, offset, limit int32) ([]PostInfo, error) {
+func ListPostInfos(ctx *gin.Context, options string, offset, limit int32) ([]PostInfo, *errcode.Error) {
 	var (
 		postInfos []PostInfo
 		err       error
@@ -411,7 +412,7 @@ func listPostInfosByVisitedNum(ctx *gin.Context, offset, limit int32) ([]PostInf
 	return ret, nil
 }
 
-func SearchPostInfosByKey(ctx *gin.Context, key string, offset, limit int32) ([]PostInfo, error) {
+func SearchPostInfosByKey(ctx *gin.Context, key string, offset, limit int32) ([]PostInfo, *errcode.Error) {
 	isRoot := getRoot(ctx)
 	results, err := mysql.Query.ListPostBySearchKey(ctx, db.ListPostBySearchKeyParams{
 		Title:    key,
@@ -432,7 +433,7 @@ func SearchPostInfosByKey(ctx *gin.Context, key string, offset, limit int32) ([]
 	return ret, nil
 }
 
-func SearchPostInfosByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]PostInfo, error) {
+func SearchPostInfosByCreateTime(ctx *gin.Context, startTime, endTime time.Time, offset, limit int32) ([]PostInfo, *errcode.Error) {
 	isRoot := getRoot(ctx)
 	results, err := mysql.Query.ListPostByStartTime(ctx, db.ListPostByStartTimeParams{
 		CreateTime:   startTime,
@@ -453,7 +454,7 @@ func SearchPostInfosByCreateTime(ctx *gin.Context, startTime, endTime time.Time,
 	return ret, nil
 }
 
-func ListPostInfosOrderByGrowingVisited(ctx *gin.Context, offset, limit int32) ([]PostInfo, error) {
+func ListPostInfosOrderByGrowingVisited(ctx *gin.Context, offset, limit int32) ([]PostInfo, *errcode.Error) {
 	ids, err := redis.Query.ListPostIDByVisitedNum(ctx, offset, limit)
 	if err != nil {
 		global.Logger.Error(err.Error())

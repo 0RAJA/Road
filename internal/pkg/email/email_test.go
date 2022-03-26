@@ -2,7 +2,7 @@ package email
 
 import (
 	"fmt"
-	"github.com/0RAJA/Bank/pkg/times"
+	"github.com/0RAJA/Road/internal/pkg/times"
 	"testing"
 	"time"
 )

@@ -83,7 +83,7 @@ func getUserInfo(token *githubToken) (map[string]interface{}, error) {
 	return userInfo, nil
 }
 
-func TokenRedirect(ctx *gin.Context) (GetTokenReply, error) {
+func TokenRedirect(ctx *gin.Context) (GetTokenReply, *errcode.Error) {
 	var (
 		err          error
 		code         = ctx.Query("code") // 获取code
@@ -138,7 +138,7 @@ func TokenRedirect(ctx *gin.Context) (GetTokenReply, error) {
 	}
 	token1, refreshToken1, err := generateToken(user.Username)
 	if err != nil {
-		return GetTokenReply{}, err
+		return GetTokenReply{}, errcode.UnauthorizedTokenGenerateErr
 	}
 	return GetTokenReply{
 		User: UserInfo{
@@ -151,7 +151,7 @@ func TokenRedirect(ctx *gin.Context) (GetTokenReply, error) {
 	}, nil
 }
 
-func generateToken(username string) (Token, ReToken, error) {
+func generateToken(username string) (Token, ReToken, *errcode.Error) {
 	token, payload1, err := global.Maker.CreateToken(username, global.AllSetting.Token.AssessTokenDuration)
 	if err != nil {
 		global.Logger.Error(err.Error())
@@ -171,7 +171,7 @@ func generateToken(username string) (Token, ReToken, error) {
 		}, nil
 }
 
-func RefreshToken(ctx *gin.Context, params RefreshTokenReplyParams) (RefreshTokenReply, error) {
+func RefreshToken(ctx *gin.Context, params RefreshTokenReplyParams) (RefreshTokenReply, *errcode.Error) {
 	payload, err := global.Maker.VerifyToken(params.ReToken)
 	if err != nil {
 		return RefreshTokenReply{}, errcode.UnauthorizedTokenErr

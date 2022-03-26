@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/0RAJA/Bank/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

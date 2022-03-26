@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"github.com/0RAJA/Road/internal/pkg/snowflake"
 	"github.com/0RAJA/Road/internal/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -10,17 +9,11 @@ import (
 )
 
 func TestQueries_CreateView(t *testing.T) {
-	err := TestQueries.CreateView(context.Background(), CreateViewParams{
-		ID:       snowflake.GetID(),
-		ViewsNum: 100,
-	})
+	err := TestQueries.CreateView(context.Background(), utils.RandomInt(1, 100))
 	require.NoError(t, err)
 }
 func testCreateView(t *testing.T) {
-	err := TestQueries.CreateView(context.Background(), CreateViewParams{
-		ID:       snowflake.GetID(),
-		ViewsNum: utils.RandomInt(1, 1000),
-	})
+	err := TestQueries.CreateView(context.Background(), utils.RandomInt(1, 100))
 	require.NoError(t, err)
 }
 

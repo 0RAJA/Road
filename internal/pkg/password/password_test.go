@@ -7,6 +7,7 @@ import (
 )
 
 func TestHashPassword(t *testing.T) {
+	//testHashPassword()
 	password := utils.RandomString(10)
 
 	hashPassword, err := HashPassword(password)

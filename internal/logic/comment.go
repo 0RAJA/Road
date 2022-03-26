@@ -9,14 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddComment(ctx *gin.Context, params AddCommentParams) error {
-	username, err := getUsername(ctx)
-	if err != nil {
-		return err
-	}
-	if username != params.Username {
-		return errcode.InsufficientPermissionsErr
-	}
+func AddComment(ctx *gin.Context, params AddCommentParams) *errcode.Error {
+	username, _ := getUsername(ctx)
 	toPost, err := mysql.Query.GetPostByPostID(ctx, params.PostID)
 	if err != nil {
 		if mysql.IsNil(err) {
@@ -41,7 +35,7 @@ func AddComment(ctx *gin.Context, params AddCommentParams) error {
 	err = mysql.Query.CreateComment(ctx, db.CreateCommentParams{
 		ID:          snowflake.GetID(),
 		PostID:      params.PostID,
-		Username:    params.Username,
+		Username:    username,
 		Content:     params.Content,
 		ToCommentID: params.ToCommentID,
 	})
@@ -52,11 +46,8 @@ func AddComment(ctx *gin.Context, params AddCommentParams) error {
 	return nil
 }
 
-func DeleteComment(ctx *gin.Context, commentID int64) error {
-	username, err := getUsername(ctx)
-	if err != nil {
-		return err
-	}
+func DeleteComment(ctx *gin.Context, commentID int64) *errcode.Error {
+	username, _ := getUsername(ctx)
 	isRoot := getRoot(ctx)
 	comment, err := mysql.Query.GetCommentByCommentID(ctx, commentID)
 	if err != nil {
@@ -77,11 +68,8 @@ func DeleteComment(ctx *gin.Context, commentID int64) error {
 	return nil
 }
 
-func ModifyComment(ctx *gin.Context, params ModifyCommentParams) error {
+func ModifyComment(ctx *gin.Context, params ModifyCommentParams) *errcode.Error {
 	username, err := getUsername(ctx)
-	if err != nil {
-		return err
-	}
 	isRoot := getRoot(ctx)
 	comment, err := mysql.Query.GetCommentByCommentID(ctx, params.CommentID)
 	if err != nil {
@@ -105,7 +93,7 @@ func ModifyComment(ctx *gin.Context, params ModifyCommentParams) error {
 	return nil
 }
 
-func ListComments(ctx *gin.Context, postID int64, offset, limit int32) ([]db.ListCommentByPostIDRow, error) {
+func ListComments(ctx *gin.Context, postID int64, offset, limit int32) ([]db.ListCommentByPostIDRow, *errcode.Error) {
 	comments, err := mysql.Query.ListCommentByPostID(ctx, db.ListCommentByPostIDParams{
 		PostID: postID,
 		Offset: offset,
