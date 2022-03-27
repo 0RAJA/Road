@@ -1,7 +1,11 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
+	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +24,22 @@ import (
 // @Router /star [put]
 func UserStarPost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.UserStarPostParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	var err *errcode.Error
+	if params.State {
+		err = logic.UserStarPost(ctx, params.PostID)
+	} else {
+		err = logic.DeleteUserStar(ctx, params.PostID)
+	}
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -37,5 +57,15 @@ func UserStarPost(ctx *gin.Context) {
 // @Router /star/{post_id} [get]
 func GetUserStar(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	response.ToResponse(true)
+	postID := conversion.AtoInt64Must(app.GetPath(ctx, "post_id"))
+	if postID <= 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	result, err := logic.GetUserStar(ctx, postID)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(result)
 }

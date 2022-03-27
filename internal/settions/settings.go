@@ -18,7 +18,7 @@ type AllSettings struct {
 
 type Rule struct {
 	UsernameLen      int    `yaml:"UsernameLen"`
-	Password         int    `yaml:"Password"`
+	PasswordLen      int    `yaml:"PasswordLen"`
 	DefaultAvatarUrl string `yaml:"DefaultAvatarUrl"`
 	CommentLen       int    `yaml:"CommentLen"`
 	TitleLen         int    `yaml:"TitleLen"`

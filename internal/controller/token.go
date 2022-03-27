@@ -1,6 +1,10 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/logic"
+	"github.com/0RAJA/Road/internal/pkg/app"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,11 +19,23 @@ import (
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /token/get [get]
 func GetToken(ctx *gin.Context) {
-
+	logic.GetToken(ctx)
 }
 
 func TokenRedirect(ctx *gin.Context) {
-
+	response := app.NewResponse(ctx)
+	params := logic.TokenRedirectParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.TokenRedirect(ctx, params.Code)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(reply)
 }
 
 // RefreshToken
@@ -35,5 +51,17 @@ func TokenRedirect(ctx *gin.Context) {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /token/refresh [get]
 func RefreshToken(ctx *gin.Context) {
-
+	response := app.NewResponse(ctx)
+	params := logic.RefreshTokenReplyParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.RefreshToken(ctx, params)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(reply)
 }

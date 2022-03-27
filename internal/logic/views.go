@@ -10,13 +10,6 @@ import (
 	"time"
 )
 
-func AddViews(ctx *gin.Context, username string) {
-	err := redis.Query.AddVisitedUserName(ctx, username)
-	if err != nil {
-		global.Logger.Error(err.Error())
-	}
-}
-
 func EnduranceViews(ctx *gin.Context) {
 	sum, err := redis.Query.CountVisitedNumsAndSetZero(ctx)
 	if err != nil {

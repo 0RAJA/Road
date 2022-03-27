@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,5 +23,16 @@ import (
 // @Router /upload [post]
 func Upload(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	response.ToResponse("test")
+	params := logic.UploadParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.Upload(params)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(reply)
 }

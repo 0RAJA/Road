@@ -44,7 +44,7 @@ func main() {
 	go func() {
 		err := s.ListenAndServe()
 		if err != nil {
-			global.Logger.Error(err.Error())
+			global.Logger.Info(err.Error())
 		}
 	}()
 	gracefulExit(s)

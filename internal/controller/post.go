@@ -1,12 +1,24 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
+	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
-	"time"
 )
+
+func checkPost(title, abstract string) *errcode.Error {
+	if len(title) <= 0 || len(title) > global.AllSetting.Rule.TitleLen {
+		return errcode.InvalidParamsErr
+	}
+	if len(abstract) <= 0 || len(abstract) > global.AllSetting.Rule.AbstractLen {
+		return errcode.InvalidParamsErr
+	}
+	return nil
+}
 
 // AddPost
 // @Summary 新增帖子
@@ -26,6 +38,20 @@ import (
 // @Router /post/create [post]
 func AddPost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.PostParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := checkPost(params.Title, params.Abstract); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	if err := logic.AddPost(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -48,6 +74,20 @@ func AddPost(ctx *gin.Context) {
 // @Router /post/update [put]
 func UpdatePost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.UpdatePostParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := checkPost(params.Title, params.Abstract); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	if err := logic.UpdatePost(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -65,18 +105,15 @@ func UpdatePost(ctx *gin.Context) {
 // @Router /post/post/{post_id} [get]
 func GetPost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	post := logic.Post{
-		ID:         utils.RandomInt(1, 100),
-		Cover:      "",
-		Title:      "",
-		Abstract:   "",
-		Content:    "",
-		Public:     false,
-		Deleted:    false,
-		CreateTime: time.Now(),
-		ModifyTime: time.Now(),
-		StarNum:    0,
-		VisitedNum: 0,
+	postID := conversion.AtoInt64Must(app.GetPath(ctx, "post_id"))
+	if postID == 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	post, err := logic.GetPost(ctx, postID)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
 	}
 	response.ToResponse(post)
 }
@@ -95,17 +132,15 @@ func GetPost(ctx *gin.Context) {
 // @Router /post/info/{post_id} [get]
 func GetPostInfo(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	postInfo := logic.PostInfo{
-		ID:         utils.RandomInt(1, 100),
-		Cover:      "",
-		Title:      "",
-		Abstract:   "",
-		Public:     false,
-		Deleted:    false,
-		CreateTime: time.Now(),
-		ModifyTime: time.Now(),
-		StarNum:    0,
-		VisitedNum: 0,
+	postID := conversion.AtoInt64Must(app.GetPath(ctx, "post_id"))
+	if postID == 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	postInfo, err := logic.GetPostInfo(ctx, postID)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
 	}
 	response.ToResponse(postInfo)
 }
@@ -125,6 +160,16 @@ func GetPostInfo(ctx *gin.Context) {
 // @Router /post/delete [put]
 func ModifyPostDeleted(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.ModifyPostDeletedParam{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	if err := logic.ModifyPostDeleted(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -142,6 +187,15 @@ func ModifyPostDeleted(ctx *gin.Context) {
 // @Router /post/{post_id} [delete]
 func RealDeletePost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	postID := conversion.AtoInt64Must(app.GetPath(ctx, "post_id"))
+	if postID <= 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	if err := logic.RealDeletePost(ctx, postID); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -160,6 +214,16 @@ func RealDeletePost(ctx *gin.Context) {
 // @Router /post/public [put]
 func ModifyPostPublic(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.ModifyPostPublicParam{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	if err := logic.ModifyPostPublic(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -179,23 +243,23 @@ func ModifyPostPublic(ctx *gin.Context) {
 // @Router /post/infos [get]
 func ListPostInfos(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfo, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	params := logic.ListPostInfosParams{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(infos, len(infos))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.ListPostInfos(ctx, params.ListBy, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // SearchPostInfosByKey
@@ -214,23 +278,23 @@ func ListPostInfos(ctx *gin.Context) {
 // @Router /post/infos/search [get]
 func SearchPostInfosByKey(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfo, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	params := logic.SearchPostInfosByKeyParam{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(infos, len(infos))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.SearchPostInfosByKey(ctx, params.Key, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // SearchPostInfosByCreateTime
@@ -250,57 +314,23 @@ func SearchPostInfosByKey(ctx *gin.Context) {
 // @Router /post/infos/time [get]
 func SearchPostInfosByCreateTime(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfo, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	params := logic.SearchPostInfosByCreateTimeParam{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(infos, len(infos))
-}
-
-// ListPostInfosOrderByGrowingStar
-// @Summary 通过按新增点赞数排序的帖子简介信息
-// @Description 通过按新增点赞数排序的帖子简介信息，按新增点赞数由高到低排序
-// @Tags 文章
-// @Accept application/json
-// @Produce application/json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param page query int false "页码 default 1"
-// @Param page_size query int false "每页数量 default and max 10"
-// @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/star/grow [get]
-func ListPostInfosOrderByGrowingStar(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfo, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
 	}
-	response.ToResponseList(infos, len(infos))
+	reply, err := logic.SearchPostInfosByCreateTime(ctx, params.StartTime, params.EndTime, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // ListPostInfosOrderByGrowingVisited
@@ -318,23 +348,16 @@ func ListPostInfosOrderByGrowingStar(ctx *gin.Context) {
 // @Router /post/infos/visit/grow [get]
 func ListPostInfosOrderByGrowingVisited(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	infos := make([]logic.PostInfo, pageSize)
-	for i := range infos {
-		infos[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	params := logic.Pagination{
+		Page:     app.GetPage(ctx),
+		PageSize: app.GetPage(ctx),
 	}
-	response.ToResponseList(infos, len(infos))
+	reply, err := logic.ListPostInfosOrderByGrowingVisited(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 /*

@@ -2,3 +2,6 @@
 {"level":"INFO","ts":"2022-03-26T13:16:51.033+0800","caller":"Road/main.go:51","msg":"Exit!"}
 {"level":"INFO","ts":"2022-03-26T14:08:42.351+0800","caller":"Road/main.go:61","msg":"ShutDown Server..."}
 {"level":"INFO","ts":"2022-03-26T14:08:42.352+0800","caller":"Road/main.go:51","msg":"Exit!"}
+{"level":"INFO","ts":"2022-03-27T20:32:03.700+0800","caller":"Road/main.go:61","msg":"ShutDown Server..."}
+{"level":"INFO","ts":"2022-03-27T20:32:03.701+0800","caller":"Road/main.go:47","msg":"http: Server closed"}
+{"level":"INFO","ts":"2022-03-27T20:32:03.702+0800","caller":"Road/main.go:51","msg":"Exit!"}

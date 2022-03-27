@@ -3,9 +3,10 @@ package controller
 import (
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
+	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 // ListViewsByCreateTime
@@ -25,16 +26,23 @@ import (
 // @Router /views/all [get]
 func ListViewsByCreateTime(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	views := make([]logic.View, pageSize)
-	for i := range views {
-		views[i] = logic.View{
-			ID:         utils.RandomInt(1, 100),
-			ViewsNum:   utils.RandomInt(1, 1000),
-			CreateTime: time.Now(),
-		}
+	params := logic.SearchPostInfosByCreateTimeParam{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(views, len(views))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.ListViewsByCreateTime(ctx, params.StartTime, params.EndTime, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // GetGrowViewsByPostID
@@ -51,5 +59,15 @@ func ListViewsByCreateTime(ctx *gin.Context) {
 // @Router /views/post/{post_id} [get]
 func GetGrowViewsByPostID(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	response.ToResponse(utils.RandomInt(1, 1000))
+	postID := conversion.AtoInt64Must(app.GetPath(ctx, "post_id"))
+	if postID <= 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	num, err := logic.GetGrowViewsByPostID(ctx, postID)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(num)
 }

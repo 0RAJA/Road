@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func AddPost(ctx *gin.Context, request PostRequest) *errcode.Error {
+func AddPost(ctx *gin.Context, request PostParams) *errcode.Error {
 	arg := db.CreatePostParams{
 		ID:       snowflake.GetID(),
 		Cover:    request.Cover,

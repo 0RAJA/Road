@@ -130,7 +130,7 @@ type PostInfo struct {
 	VisitedNum int64     `json:"visited_num"` //访问数
 }
 
-type PostRequest struct {
+type PostParams struct {
 	Cover    string `json:"cover" binding:"required"`
 	Title    string `json:"title" binding:"required"`
 	Abstract string `json:"abstract" binding:"required"`
@@ -139,7 +139,7 @@ type PostRequest struct {
 }
 
 type UpdatePostParams struct {
-	PostRequest
+	PostParams
 	PostID int64 `json:"post_id" binding:"required,gte=1"`
 }
 type ListPostInfosParams struct {
@@ -202,6 +202,10 @@ type ListPostInfosByTagIDReply struct {
 	Pager Pager      `json:"pager"`
 }
 
+type TokenRedirectParams struct {
+	Code string `json:"code" bind:"required"`
+}
+
 type AddTagParams struct {
 	TagName string `json:"tag_name" binding:"required,alphanumunicode"`
 }
@@ -239,10 +243,14 @@ type User struct {
 	CreateTime    time.Time `json:"create_time"`    //创建时间
 	ModifyTime    time.Time `json:"modify_time"`    //修改时间
 }
-type ListUsersParams struct {
+type ListUsersByCreateTimeParams struct {
 	StartTime time.Time `json:"start_time" binding:"required,datetime"`
 	EndTime   time.Time `json:"end_time" binding:"required,datetime"`
 	Pagination
+}
+type UserStarPostParams struct {
+	PostID int64 `json:"post_id,omitempty" binding:"required,gte=1"`
+	State  bool  `json:"state,omitempty" binding:"required,oneof=true,false"`
 }
 type ListUsersReply struct {
 	Users []User `json:"users"`

@@ -123,28 +123,19 @@ func UpdateManagerAvatar(ctx *gin.Context, AvatarUrl string) *errcode.Error {
 	return nil
 }
 
-func DeleteManager(ctx *gin.Context) *errcode.Error {
-	username, _ := getUsername(ctx)
-	manager, err := mysql.Query.GetManagerByUsername(ctx, username)
-	if err != nil {
-		if mysql.IsNil(err) {
-			global.Logger.Error(err.Error())
-			return errcode.ErrUsernameNotFind
-		}
-		return errcode.ServerErr
-	}
-	if manager.Username == username {
+func DeleteManager(ctx *gin.Context, username string) *errcode.Error {
+	ownUsername, _ := getUsername(ctx)
+	if ownUsername == username {
 		return errcode.ErrDeleteManagerSelf
 	}
-	err = mysql.Query.DeleteManager(ctx, username)
-	if err != nil {
+	if err := mysql.Query.DeleteManager(ctx, username); err != nil {
 		global.Logger.Error(err.Error())
 		return errcode.ServerErr
 	}
 	return nil
 }
 
-func ListManagers(ctx *gin.Context, offset, limit int32) ([]db.ListManagerRow, error) {
+func ListManagers(ctx *gin.Context, offset, limit int32) ([]db.ListManagerRow, *errcode.Error) {
 	managers, err := mysql.Query.ListManager(ctx, db.ListManagerParams{
 		Offset: offset,
 		Limit:  limit,

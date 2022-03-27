@@ -83,10 +83,9 @@ func getUserInfo(token *githubToken) (map[string]interface{}, error) {
 	return userInfo, nil
 }
 
-func TokenRedirect(ctx *gin.Context) (GetTokenReply, *errcode.Error) {
+func TokenRedirect(ctx *gin.Context, code string) (GetTokenReply, *errcode.Error) {
 	var (
 		err          error
-		code         = ctx.Query("code") // 获取code
 		tokenAuthUrl = getTokenAuthUrl(code)
 		token        *githubToken
 	)

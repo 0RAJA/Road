@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
+	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 // AddTag
@@ -22,6 +24,16 @@ import (
 // @Router /tag [post]
 func AddTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.AddTagParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	if err := logic.AddTag(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -39,6 +51,15 @@ func AddTag(ctx *gin.Context) {
 // @Router /tag/{tag_id} [delete]
 func DeleteTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	tagID := conversion.AtoInt64Must(app.GetPath(ctx, "tag_id"))
+	if tagID <= 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	if err := logic.DeleteTag(ctx, tagID); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -57,6 +78,16 @@ func DeleteTag(ctx *gin.Context) {
 // @Router /tag [put]
 func UpdateTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.UpdateTagParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	if err := logic.UpdateTag(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -75,16 +106,23 @@ func UpdateTag(ctx *gin.Context) {
 // @Router /tag [get]
 func ListTags(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	tags := make([]logic.Tag, pageSize)
-	for i := range tags {
-		tags[i] = logic.Tag{
-			ID:         utils.RandomInt(1, 100),
-			TagName:    utils.RandomOwner(),
-			CreateTime: time.Now(),
-		}
+	params := logic.Pagination{
+		Page:     app.GetPage(ctx),
+		PageSize: app.GetPage(ctx),
 	}
-	response.ToResponseList(tags, len(tags))
+	reply, err := logic.ListTags(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
+}
+
+func checkTagName(tagName string) *errcode.Error {
+	if len(tagName) <= 0 || len(tagName) > global.AllSetting.Rule.TagLen {
+		return errcode.InvalidParamsErr
+	}
+	return nil
 }
 
 // CheckTagName
@@ -100,5 +138,16 @@ func ListTags(ctx *gin.Context) {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /tag/check{tag_name} [get]
 func CheckTagName(ctx *gin.Context) {
-
+	response := app.NewResponse(ctx)
+	tagName := app.GetPath(ctx, "tag_name")
+	if err := checkTagName(tagName); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	result, err := logic.CheckTagName(ctx, tagName)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(result)
 }

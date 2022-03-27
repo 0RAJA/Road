@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 // GetUserInfo
@@ -22,10 +22,17 @@ import (
 // @Router /user/{username} [get]
 func GetUserInfo(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	userInfo := logic.UserInfo{
-		Username: utils.RandomOwner(),
+	username := app.GetPath(ctx, "username")
+	if err := checkUsername(username); err != nil {
+		response.ToErrorResponse(err)
+		return
 	}
-	response.ToResponse(userInfo)
+	reply, err := logic.GetUserInfo(ctx, username)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponse(reply)
 }
 
 // ListUsers
@@ -43,16 +50,16 @@ func GetUserInfo(ctx *gin.Context) {
 // @Router /user/users [get]
 func ListUsers(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	users := make([]logic.User, pageSize)
-	for i := range users {
-		users[i] = logic.User{
-			Username:   utils.RandomOwner(),
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-		}
+	params := logic.Pagination{
+		Page:     app.GetPage(ctx),
+		PageSize: app.GetPage(ctx),
 	}
-	response.ToResponseList(users, len(users))
+	reply, err := logic.ListUsers(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // ListUsersByCreateTime
@@ -72,14 +79,21 @@ func ListUsers(ctx *gin.Context) {
 // @Router /user/createTime [get]
 func ListUsersByCreateTime(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	users := make([]logic.User, pageSize)
-	for i := range users {
-		users[i] = logic.User{
-			Username:   utils.RandomOwner(),
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-		}
+	params := logic.ListUsersByCreateTimeParams{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(users, len(users))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+		return
+	}
+	reply, err := logic.ListUsersByCreateTime(ctx, params.StartTime, params.EndTime, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }

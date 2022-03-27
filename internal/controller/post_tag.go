@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
-	"github.com/0RAJA/Road/internal/pkg/utils"
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
+	"github.com/0RAJA/Road/internal/pkg/bind"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 // AddPostTag
@@ -23,6 +23,16 @@ import (
 // @Router /postTag [post]
 func AddPostTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.PostTagParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := logic.AddPostTag(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -41,6 +51,16 @@ func AddPostTag(ctx *gin.Context) {
 // @Router /postTag [delete]
 func DeletePostTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
+	params := logic.DeletePostTagParams{}
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	if err := logic.DeletePostTag(ctx, params); err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
 	response.ToResponse(nil)
 }
 
@@ -60,16 +80,23 @@ func DeletePostTag(ctx *gin.Context) {
 // @Router /postTag/tags [get]
 func ListTagsByPostID(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	tags := make([]logic.Tag, pageSize)
-	for i := range tags {
-		tags[i] = logic.Tag{
-			ID:         utils.RandomInt(1, 100),
-			TagName:    utils.RandomOwner(),
-			CreateTime: time.Now(),
-		}
+	params := logic.ListTagsByPostIDParams{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(tags, len(tags))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	reply, err := logic.ListTagsByPostID(ctx, params.PostID, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 // ListPostInfosByTagID
@@ -88,23 +115,23 @@ func ListTagsByPostID(ctx *gin.Context) {
 // @Router /postTag/infos [get]
 func ListPostInfosByTagID(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	pageSize := app.GetPageSize(ctx)
-	posts := make([]logic.PostInfo, pageSize)
-	for i := range posts {
-		posts[i] = logic.PostInfo{
-			ID:         utils.RandomInt(1, 100),
-			Cover:      "",
-			Title:      "",
-			Abstract:   "",
-			Public:     false,
-			Deleted:    false,
-			CreateTime: time.Now(),
-			ModifyTime: time.Now(),
-			StarNum:    0,
-			VisitedNum: 0,
-		}
+	params := logic.ListPostInfosByTagIDParams{
+		Pagination: logic.Pagination{
+			Page:     app.GetPage(ctx),
+			PageSize: app.GetPage(ctx),
+		},
 	}
-	response.ToResponseList(posts, len(posts))
+	valid, errs := bind.BindAndValid(ctx, &params)
+	if !valid {
+		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(errs.Errors()...))
+		return
+	}
+	reply, err := logic.ListPostInfosByTagID(ctx, params.TagID, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
+	if err != nil {
+		response.ToErrorResponse(err)
+		return
+	}
+	response.ToResponseList(reply, len(reply))
 }
 
 /*

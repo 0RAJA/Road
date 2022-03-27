@@ -11,7 +11,7 @@ import (
 
 func NewRouting() *gin.Engine {
 	r := gin.New()
-	r.Use(mid.Cors(), mid.GinRecovery(true), mid.GinLogger())
+	r.Use(mid.Cors(), mid.GinRecovery(true), mid.GinLogger(), mid.Translations())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	comment := r.Group("/comment")
 	{
@@ -39,7 +39,6 @@ func NewRouting() *gin.Engine {
 			infos.GET("/", controller.ListPostInfos)
 			infos.GET("/search", controller.SearchPostInfosByKey)
 			infos.GET("/time", controller.SearchPostInfosByCreateTime)
-			infos.GET("/star/grow", controller.ListPostInfosOrderByGrowingStar)
 			infos.GET("/visit/grow", controller.ListPostInfosOrderByGrowingVisited)
 		}
 		managerAuth := post.Use(mid.AuthMiddleware(), mid.ManagerAuth())
