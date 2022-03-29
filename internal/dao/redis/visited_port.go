@@ -57,7 +57,7 @@ func (q *Queries) ListAllPostIDByVisitedNumAndSetZero(ctx context.Context) (ret 
 	}
 	ret = make(map[int64]int64)
 	for _, v := range nums.Val() {
-		ret[v.Member.(int64)] = int64(v.Score)
+		ret[atoInt64Must(v.Member.(string))] = int64(v.Score)
 	}
 	return ret, nil
 }

@@ -33,7 +33,7 @@ create table comment
     content       text                                not null,
     to_comment_id bigint    default 0                 not null,
     create_time   timestamp default CURRENT_TIMESTAMP not null,
-    modify_time   timestamp default CURRENT_TIMESTAMP not null,
+    modify_time   timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint comment_id_uindex
         unique (id),
     constraint comment_post_id_fk
@@ -141,3 +141,10 @@ create table if not exists views
         unique (id)
 );
 
+# 解决中文字符问题
+ALTER TABLE road.post
+    CONVERT TO CHARACTER SET utf8;
+ALTER TABLE road.tags
+    CONVERT TO CHARACTER SET utf8;
+ALTER TABLE road.comment
+    CONVERT TO CHARACTER SET utf8;

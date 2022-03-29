@@ -17,7 +17,7 @@ import (
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
-// @Param state body bool true "点赞状态 Enums(true,false)"
+// @Param state body bool false "点赞状态 Enums(true,false) 默认为false"
 // @Success 200 {string} string  ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

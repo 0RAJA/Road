@@ -176,7 +176,7 @@ func UpdateManager(ctx *gin.Context) {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /manager/{username} [post]
+// @Router /manager/{username} [delete]
 func DeleteManager(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	username := app.GetPath(ctx, "username")
@@ -208,7 +208,7 @@ func ListManagers(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{
 		Page:     app.GetPage(ctx),
-		PageSize: app.GetPage(ctx),
+		PageSize: app.GetPageSize(ctx),
 	}
 	reply, err := logic.ListManagers(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
 	if err != nil {

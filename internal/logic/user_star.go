@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"context"
 	"github.com/0RAJA/Road/internal/dao/mysql"
 	db "github.com/0RAJA/Road/internal/dao/mysql/sqlc"
 	"github.com/0RAJA/Road/internal/dao/redis"
@@ -54,7 +55,7 @@ func GetUserStar(ctx *gin.Context, postID int64) (bool, *errcode.Error) {
 	return result, nil
 }
 
-func EndurancePostStar(ctx *gin.Context) {
+func EndurancePostStar(ctx context.Context) {
 	postStars, err := redis.Query.ListAllPostStarAndSetZero(ctx)
 	if err != nil {
 		global.Logger.Error(err.Error())

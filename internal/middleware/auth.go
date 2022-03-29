@@ -15,34 +15,43 @@ const (
 	RootKey          = "Root"
 )
 
-func AuthMiddleware() func(ctx *gin.Context) {
+func Login() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		response := app.NewResponse(ctx)
-		authorizationHeader := ctx.GetHeader(AuthorizationKey)
-		if len(authorizationHeader) == 0 {
+		if _, ok := ctx.Get(AuthorizationKey); !ok {
 			response.ToErrorResponse(errcode.UnauthorizedAuthNotExistErr)
 			ctx.Abort()
 			return
 		}
+		ctx.Next()
+	}
+}
+
+func Auth() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		authorizationHeader := ctx.GetHeader("Authorization")
+		if len(authorizationHeader) == 0 {
+			ctx.Next()
+			return
+		}
 		fields := strings.SplitN(authorizationHeader, " ", 2)
 		if len(fields) != 2 || strings.ToLower(fields[0]) != global.AllSetting.Token.AuthorizationType {
-			response.ToErrorResponse(errcode.UnauthorizedAuthNotExistErr)
-			ctx.Abort()
+			ctx.Next()
 			return
 		}
 		accessToken := fields[1]
 		payload, err := global.Maker.VerifyToken(accessToken)
 		if err != nil {
-			response.ToErrorResponse(errcode.UnauthorizedAuthNotExistErr.WithDetails(err.Error()))
-			ctx.Abort()
+			ctx.Next()
 			return
 		}
+		ctx.Set(AuthorizationKey, payload)
 		if err = redis.Query.AddVisitedUserName(ctx, payload.UserName); err != nil {
 			global.Logger.Error(err.Error())
 		}
-		ctx.Set(AuthorizationKey, payload)
-		if _, err := mysql.Query.GetManagerByUsername(ctx, payload.UserName); err == nil {
-			ctx.Set(RootKey, true)
+		if _, ok := ctx.Get(RootKey); !ok {
+			_, err := mysql.Query.GetManagerByUsername(ctx, payload.UserName)
+			ctx.Set(RootKey, err == nil)
 		}
 		ctx.Next()
 	}
@@ -51,39 +60,11 @@ func AuthMiddleware() func(ctx *gin.Context) {
 func ManagerAuth() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		response := app.NewResponse(ctx)
-		_, ok := ctx.Get(RootKey)
-		if !ok {
+		if _, ok := ctx.Get(RootKey); !ok {
 			response.ToErrorResponse(errcode.InsufficientPermissionsErr)
 			ctx.Abort()
 			return
 		}
 		ctx.Next()
-	}
-}
-
-func NoLogin() func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		response := app.NewResponse(ctx)
-		authorizationHeader := ctx.GetHeader(AuthorizationKey)
-		if len(authorizationHeader) == 0 {
-			ctx.Next()
-			return
-		}
-		fields := strings.SplitN(authorizationHeader, " ", 2)
-		if len(fields) != 2 || strings.ToLower(fields[0]) != global.AllSetting.Token.AuthorizationType {
-			response.ToErrorResponse(errcode.UnauthorizedAuthNotExistErr)
-			ctx.Abort()
-			return
-		}
-		accessToken := fields[1]
-		_, err := global.Maker.VerifyToken(accessToken)
-		if err != nil {
-			response.ToErrorResponse(errcode.UnauthorizedAuthNotExistErr.WithDetails(err.Error()))
-			ctx.Abort()
-			return
-		}
-		response.ToErrorResponse(errcode.ErrLoggedIn)
-		ctx.Abort()
-		return
 	}
 }

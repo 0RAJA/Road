@@ -35,8 +35,8 @@ func LoginManager(ctx *gin.Context, params LoginManagerParams) (LoginManagerRepl
 	if err != nil {
 		return LoginManagerReply{}, errcode.ErrPasswordNotEqual
 	}
-	token, refreshToken, err := generateToken(manager.Username)
-	if err != nil {
+	token, refreshToken, err1 := generateToken(manager.Username)
+	if err1 != nil {
 		return LoginManagerReply{}, errcode.UnauthorizedTokenGenerateErr
 	}
 	return LoginManagerReply{

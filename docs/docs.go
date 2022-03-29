@@ -44,7 +44,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "需要显示评论的帖子ID",
-                        "name": "PostID",
+                        "name": "post_id",
                         "in": "query",
                         "required": true
                     },
@@ -175,15 +175,6 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "description": "评论内容 1\u003c=len\u003c=100",
                         "name": "content",
                         "in": "body",
@@ -297,13 +288,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "页码 default 1",
                         "name": "page",
@@ -338,7 +322,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "修改管理员头像和密码，不输入表示不修改",
+                "description": "修改管理员头像和密码，空字符串表示不修改",
                 "consumes": [
                     "application/json"
                 ],
@@ -350,13 +334,6 @@ const docTemplate = `{
                 ],
                 "summary": "修改管理员头像和密码",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
@@ -597,7 +574,7 @@ const docTemplate = `{
             }
         },
         "/manager/{username}": {
-            "post": {
+            "delete": {
                 "description": "删除一个管理员",
                 "consumes": [
                     "application/json"
@@ -610,13 +587,6 @@ const docTemplate = `{
                 ],
                 "summary": "删除管理员",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Bearer 用户令牌",
@@ -774,10 +744,9 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "description": "帖子删除状态",
+                        "description": "帖子删除状态,默认为false",
                         "name": "deleted",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "type": "boolean"
                         }
@@ -990,62 +959,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/post/infos/star/grow": {
-            "get": {
-                "description": "通过按新增点赞数排序的帖子简介信息，按新增点赞数由高到低排序",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "文章"
-                ],
-                "summary": "通过按新增点赞数排序的帖子简介信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer 用户令牌",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "页码 default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量 default and max 10",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回帖子简介的数组和描述数组大小的信息",
-                        "schema": {
-                            "$ref": "#/definitions/logic.ListPostInfosReply"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/post/infos/time": {
             "get": {
                 "description": "通过时间段来检索帖子，默认按创建时间先后倒序",
@@ -1065,6 +978,20 @@ const docTemplate = `{
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "起始时间 (2002-03-26)",
+                        "name": "start_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (2002-03-26)",
+                        "name": "end_time",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -1240,7 +1167,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "description": "帖子公开状态",
+                        "description": "帖子公开状态,默认为false",
                         "name": "public",
                         "in": "body",
                         "required": true,
@@ -1703,10 +1630,9 @@ const docTemplate = `{
                             true,
                             false
                         ],
-                        "description": "点赞状态 Enums(true,false)",
+                        "description": "点赞状态 Enums(true,false) 默认为false",
                         "name": "state",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "type": "boolean"
                         }
@@ -1977,7 +1903,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "标签名",
                         "name": "tag_name",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -2090,7 +2016,7 @@ const docTemplate = `{
             }
         },
         "/token/refresh": {
-            "get": {
+            "put": {
                 "description": "将过期的token和未过期的retoken换取新的token",
                 "consumes": [
                     "application/json"
@@ -2227,6 +2153,20 @@ const docTemplate = `{
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "起始时间 (2002-03-26 09:00:00)",
+                        "name": "start_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (2002-03-26 09:00:00)",
+                        "name": "end_time",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -2390,6 +2330,20 @@ const docTemplate = `{
                         "description": "Bearer 用户令牌",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "起始时间 (2002-03-26 09:00:00)",
+                        "name": "start_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (2002-03-26 09:00:00)",
+                        "name": "end_time",
+                        "in": "query",
                         "required": true
                     },
                     {

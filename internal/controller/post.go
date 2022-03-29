@@ -153,7 +153,7 @@ func GetPostInfo(ctx *gin.Context) {
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
-// @Param deleted body bool true "帖子删除状态"
+// @Param deleted body bool false "帖子删除状态,默认为false"
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
@@ -207,7 +207,7 @@ func RealDeletePost(ctx *gin.Context) {
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
-// @Param public body bool true "帖子公开状态"
+// @Param public body bool true "帖子公开状态,默认为false"
 // @Success 200 {string}  string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
@@ -246,7 +246,7 @@ func ListPostInfos(ctx *gin.Context) {
 	params := logic.ListPostInfosParams{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
 	valid, errs := bind.BindAndValid(ctx, &params)
@@ -281,7 +281,7 @@ func SearchPostInfosByKey(ctx *gin.Context) {
 	params := logic.SearchPostInfosByKeyParam{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
 	valid, errs := bind.BindAndValid(ctx, &params)
@@ -304,8 +304,8 @@ func SearchPostInfosByKey(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param start_time query time.Time true "起始时间 (2002-03-26)"
-// @Param end_time query time.Time true "结束时间 (2002-03-26)"
+// @Param start_time query string true "起始时间 (2002-03-26)"
+// @Param end_time query string true "结束时间 (2002-03-26)"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
@@ -317,12 +317,18 @@ func SearchPostInfosByCreateTime(ctx *gin.Context) {
 	params := logic.SearchPostInfosByCreateTimeParam{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
-	valid, errs := bind.BindAndValid(ctx, &params)
-	if !valid {
-		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+	var err1 error
+	params.StartTime, err1 = app.GetTime(ctx, "start_time")
+	if err1 != nil {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	params.EndTime, err1 = app.GetTime(ctx, "end_time")
+	if err1 != nil {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
 		return
 	}
 	reply, err := logic.SearchPostInfosByCreateTime(ctx, params.StartTime, params.EndTime, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
@@ -350,7 +356,7 @@ func ListPostInfosOrderByGrowingVisited(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{
 		Page:     app.GetPage(ctx),
-		PageSize: app.GetPage(ctx),
+		PageSize: app.GetPageSize(ctx),
 	}
 	reply, err := logic.ListPostInfosOrderByGrowingVisited(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
 	if err != nil {

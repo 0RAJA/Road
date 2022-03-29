@@ -4,7 +4,6 @@ import (
 	"github.com/0RAJA/Road/internal/logic"
 	"github.com/0RAJA/Road/internal/pkg/app"
 	"github.com/0RAJA/Road/internal/pkg/app/errcode"
-	"github.com/0RAJA/Road/internal/pkg/bind"
 	"github.com/0RAJA/Road/internal/pkg/conversion"
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +15,8 @@ import (
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param start_time query time.Time true "起始时间 (2002-03-26)"
-// @Param end_time query time.Time true "结束时间 (2002-03-26)"
+// @Param start_time query string true "起始时间 (2002-03-26 09:00:00)"
+// @Param end_time query string true "结束时间 (2002-03-26 09:00:00)"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {object} logic.ListViewsByCreateTimeReply  "指定时间内的所有访问数"
@@ -29,12 +28,18 @@ func ListViewsByCreateTime(ctx *gin.Context) {
 	params := logic.SearchPostInfosByCreateTimeParam{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
-	valid, errs := bind.BindAndValid(ctx, &params)
-	if !valid {
-		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
+	var err1 error
+	params.StartTime, err1 = app.GetTime(ctx, "start_time")
+	if err1 != nil {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
+	params.EndTime, err1 = app.GetTime(ctx, "end_time")
+	if err1 != nil {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
 		return
 	}
 	reply, err := logic.ListViewsByCreateTime(ctx, params.StartTime, params.EndTime, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)

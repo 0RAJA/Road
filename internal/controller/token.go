@@ -30,6 +30,10 @@ func TokenRedirect(ctx *gin.Context) {
 		response.ToErrorResponse(errcode.InvalidParamsErr.WithDetails(bind.FormatBindErr(errs)))
 		return
 	}
+	if len(params.Code) == 0 {
+		response.ToErrorResponse(errcode.InvalidParamsErr)
+		return
+	}
 	reply, err := logic.TokenRedirect(ctx, params.Code)
 	if err != nil {
 		response.ToErrorResponse(err)
@@ -49,7 +53,7 @@ func TokenRedirect(ctx *gin.Context) {
 // @Success 200 {object} logic.RefreshTokenReply "返回用户信息和新的token"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /token/refresh [get]
+// @Router /token/refresh [put]
 func RefreshToken(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.RefreshTokenReplyParams{}

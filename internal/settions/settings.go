@@ -17,13 +17,16 @@ type AllSettings struct {
 }
 
 type Rule struct {
-	UsernameLen      int    `yaml:"UsernameLen"`
-	PasswordLen      int    `yaml:"PasswordLen"`
-	DefaultAvatarUrl string `yaml:"DefaultAvatarUrl"`
-	CommentLen       int    `yaml:"CommentLen"`
-	TitleLen         int    `yaml:"TitleLen"`
-	AbstractLen      int    `yaml:"AbstractLen"`
-	TagLen           int    `yaml:"TagLen"`
+	UsernameLen           int           `yaml:"UsernameLen"`
+	PasswordLen           int           `yaml:"PasswordLen"`
+	DefaultAvatarUrl      string        `yaml:"DefaultAvatarUrl"`
+	CommentLen            int           `yaml:"CommentLen"`
+	TitleLen              int           `yaml:"TitleLen"`
+	AbstractLen           int           `yaml:"AbstractLen"`
+	TagLen                int           `yaml:"TagLen"`
+	EndurancePostStarTime time.Duration `yaml:"EndurancePostStarTime"`
+	EndurancePostViews    time.Duration `yaml:"EndurancePostViews"`
+	EnduranceViewTime     time.Duration `yaml:"EnduranceViewTime"`
 }
 
 type Github struct {
@@ -89,8 +92,9 @@ type Token struct {
 }
 
 type Upload struct {
-	Image Image `yaml:"Image"`
-	File  File  `yaml:"File"`
+	StaticPath string `yaml:"StaticPath"`
+	Image      Image  `yaml:"Image"`
+	File       File   `yaml:"File"`
 }
 
 type Image struct {

@@ -328,7 +328,7 @@ paths:
         type: string
       - description: 需要显示评论的帖子ID
         in: query
-        name: PostID
+        name: post_id
         required: true
         type: integer
       - description: 页码 default 1
@@ -375,12 +375,6 @@ paths:
         required: true
         schema:
           type: integer
-      - description: 用户名
-        in: body
-        name: username
-        required: true
-        schema:
-          type: string
       - description: 评论内容 1<=len<=100
         in: body
         name: content
@@ -496,11 +490,6 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -530,13 +519,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: 修改管理员头像和密码，不输入表示不修改
+      description: 修改管理员头像和密码，空字符串表示不修改
       parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Bearer 用户令牌
         in: header
         name: Authorization
@@ -573,16 +557,11 @@ paths:
       tags:
       - 管理员
   /manager/{username}:
-    post:
+    delete:
       consumes:
       - application/json
       description: 删除一个管理员
       parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Bearer 用户令牌
         in: header
         name: Authorization
@@ -848,10 +827,9 @@ paths:
         required: true
         schema:
           type: integer
-      - description: 帖子删除状态
+      - description: 帖子删除状态,默认为false
         in: body
         name: deleted
-        required: true
         schema:
           type: boolean
       produces:
@@ -998,43 +976,6 @@ paths:
       summary: 通过关键字搜索帖子的标题和简介
       tags:
       - 文章
-  /post/infos/star/grow:
-    get:
-      consumes:
-      - application/json
-      description: 通过按新增点赞数排序的帖子简介信息，按新增点赞数由高到低排序
-      parameters:
-      - description: Bearer 用户令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 页码 default 1
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量 default and max 10
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 返回帖子简介的数组和描述数组大小的信息
-          schema:
-            $ref: '#/definitions/logic.ListPostInfosReply'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 通过按新增点赞数排序的帖子简介信息
-      tags:
-      - 文章
   /post/infos/time:
     get:
       consumes:
@@ -1044,6 +985,16 @@ paths:
       - description: Bearer 用户令牌
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: 起始时间 (2002-03-26)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26)
+        in: query
+        name: end_time
         required: true
         type: string
       - description: 页码 default 1
@@ -1160,7 +1111,7 @@ paths:
         required: true
         schema:
           type: integer
-      - description: 帖子公开状态
+      - description: 帖子公开状态,默认为false
         in: body
         name: public
         required: true
@@ -1431,13 +1382,12 @@ paths:
         required: true
         schema:
           type: integer
-      - description: 点赞状态 Enums(true,false)
+      - description: 点赞状态 Enums(true,false) 默认为false
         enum:
         - true
         - false
         in: body
         name: state
-        required: true
         schema:
           type: boolean
       produces:
@@ -1649,7 +1599,7 @@ paths:
         required: true
         type: string
       - description: 标签名
-        in: path
+        in: query
         name: tag_name
         required: true
         type: string
@@ -1695,7 +1645,7 @@ paths:
       tags:
       - auth
   /token/refresh:
-    get:
+    put:
       consumes:
       - application/json
       description: 将过期的token和未过期的retoken换取新的token
@@ -1818,6 +1768,16 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: 起始时间 (2002-03-26 09:00:00)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26 09:00:00)
+        in: query
+        name: end_time
+        required: true
+        type: string
       - description: 页码 default 1
         in: query
         name: page
@@ -1890,6 +1850,16 @@ paths:
       - description: Bearer 用户令牌
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: 起始时间 (2002-03-26 09:00:00)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26 09:00:00)
+        in: query
+        name: end_time
         required: true
         type: string
       - description: 页码 default 1

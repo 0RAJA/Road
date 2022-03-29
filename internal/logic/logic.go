@@ -33,6 +33,6 @@ func getUsername(ctx *gin.Context) (string, error) {
 }
 
 func getRoot(ctx *gin.Context) bool {
-	_, ok := ctx.Get(middleware.RootKey)
-	return ok
+	result, ok := ctx.Get(middleware.RootKey)
+	return ok && result.(bool)
 }

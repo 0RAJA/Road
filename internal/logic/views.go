@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"context"
 	"github.com/0RAJA/Road/internal/dao/mysql"
 	db "github.com/0RAJA/Road/internal/dao/mysql/sqlc"
 	"github.com/0RAJA/Road/internal/dao/redis"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-func EnduranceViews(ctx *gin.Context) {
+func EnduranceViews(ctx context.Context) {
 	sum, err := redis.Query.CountVisitedNumsAndSetZero(ctx)
 	if err != nil {
 		global.Logger.Error(err.Error())
@@ -49,7 +50,7 @@ func GetGrowViewsByPostID(ctx *gin.Context, postID int64) (int64, *errcode.Error
 	return view, nil
 }
 
-func EndurancePostGrowViews(ctx *gin.Context) {
+func EndurancePostGrowViews(ctx context.Context) {
 	results, err := redis.Query.ListAllPostIDByVisitedNumAndSetZero(ctx)
 	if err != nil {
 		global.Logger.Error(err.Error())

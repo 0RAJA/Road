@@ -100,6 +100,9 @@ func TokenRedirect(ctx *gin.Context, code string) (GetTokenReply, *errcode.Error
 		global.Logger.Info("获取用户信息失败，错误信息为:" + err.Error())
 		return GetTokenReply{}, errcode.ErrAuthorizationFailed
 	}
+	if _, ok := userInfo["login"].(string); !ok {
+		return GetTokenReply{}, errcode.UnauthorizedNotLoginErr
+	}
 	user := User{
 		Username:      userInfo["login"].(string),
 		AvatarUrl:     userInfo["avatar_url"].(string),
@@ -135,8 +138,8 @@ func TokenRedirect(ctx *gin.Context, code string) (GetTokenReply, *errcode.Error
 		global.Logger.Error(err.Error())
 		return GetTokenReply{}, errcode.ServerErr
 	}
-	token1, refreshToken1, err := generateToken(user.Username)
-	if err != nil {
+	token1, refreshToken1, err1 := generateToken(user.Username)
+	if err1 != nil {
 		return GetTokenReply{}, errcode.UnauthorizedTokenGenerateErr
 	}
 	return GetTokenReply{

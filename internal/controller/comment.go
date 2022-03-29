@@ -25,7 +25,6 @@ func checkComment(comment string) *errcode.Error {
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param post_id body int64 true "帖子ID"
-// @Param username body string true "用户名"
 // @Param content body string true "评论内容 1<=len<=100"
 // @Param to_comment_id body int64 true "回复的评论ID"
 // @Success 200 {string} string ""
@@ -117,7 +116,7 @@ func ModifyComment(ctx *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param PostID query int64 true "需要显示评论的帖子ID"
+// @Param post_id query int64 true "需要显示评论的帖子ID"
 // @Param page query int false "页码 default 1"
 // @Param page_size query int false "每页数量 default and max 10"
 // @Success 200 {array} logic.ListCommentByPostIDReply "返回评论的信息"
@@ -129,7 +128,7 @@ func ListComments(ctx *gin.Context) {
 	params := logic.ListCommentByPostIDParams{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
 	valid, errs := bind.BindAndValid(ctx, &params)

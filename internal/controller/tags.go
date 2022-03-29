@@ -108,7 +108,7 @@ func ListTags(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{
 		Page:     app.GetPage(ctx),
-		PageSize: app.GetPage(ctx),
+		PageSize: app.GetPageSize(ctx),
 	}
 	reply, err := logic.ListTags(ctx, app.GetPageOffset(params.Page, params.PageSize), params.PageSize)
 	if err != nil {
@@ -132,14 +132,14 @@ func checkTagName(tagName string) *errcode.Error {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param tag_name path string true "标签名"
+// @Param tag_name query string true "标签名"
 // @Success 200 {object} logic.ListTagsReply "返回帖子对应的所有标签的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /tag/check{tag_name} [get]
 func CheckTagName(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
-	tagName := app.GetPath(ctx, "tag_name")
+	tagName := ctx.Query("tag_name")
 	if err := checkTagName(tagName); err != nil {
 		response.ToErrorResponse(err)
 		return

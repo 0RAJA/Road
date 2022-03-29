@@ -461,7 +461,7 @@ func ListPostInfosOrderByGrowingVisited(ctx *gin.Context, offset, limit int32) (
 		return nil, errcode.ServerErr
 	}
 	postInfos := make([]PostInfo, 0, len(ids))
-	for i := range postInfos {
+	for i := range ids {
 		info, err := GetPostInfo(ctx, ids[i])
 		if err != nil {
 			if mysql.IsNil(err) || errors.Is(err, errcode.InsufficientPermissionsErr) {

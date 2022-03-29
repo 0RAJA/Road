@@ -6,8 +6,8 @@ import (
 )
 
 type Pagination struct {
-	Page     int32 `json:"page" binding:"get=1"`             //页数
-	PageSize int32 `json:"page_size" binding:"get=1,lte=10"` //一页的大小
+	Page     int32 `json:"page" binding:"gte=1" form:"page"`           //页数
+	PageSize int32 `json:"page_size" binding:"gte=1" form:"page_size"` //一页的大小
 }
 
 type Pager struct {
@@ -17,18 +17,18 @@ type Pager struct {
 }
 
 type AddCommentParams struct {
-	PostID      int64  `json:"post_id" binding:"required,gte=1"`
-	Content     string `json:"content" bind:"required"`
-	ToCommentID int64  `json:"to_comment_id" bind:"required,gte=0"`
+	PostID      int64  `json:"post_id" binding:"required,gte=1" form:"post_id"`
+	Content     string `json:"content" bind:"required,gte=1,lte=100" form:"content"`
+	ToCommentID int64  `json:"to_comment_id" bind:"required,gte=0" form:"to_comment_id"`
 }
 
 type ModifyCommentParams struct {
-	Content   string `json:"content" binding:"required"`
-	CommentID int64  `json:"comment_id" binding:"required,gte=1"`
+	Content   string `json:"content" binding:"required,gte=1,lte=100" form:"content"`
+	CommentID int64  `json:"comment_id" binding:"required,gte=1" form:"comment_id"`
 }
 
 type ListCommentByPostIDParams struct {
-	PostID int64 `json:"post_id" binding:"required,gte=1"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
 	Pagination
 }
 
@@ -66,8 +66,8 @@ type ReToken struct {
 }
 
 type LoginManagerParams struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required" form:"username"`
+	Password string `json:"password" binding:"required" form:"password"`
 }
 
 type LoginManagerReply struct {
@@ -77,8 +77,8 @@ type LoginManagerReply struct {
 }
 
 type AddManagerRequest struct {
-	Username  string `json:"username" binding:"required"`
-	Password  string `json:"password" binding:"required"`
+	Username  string `json:"username" binding:"required,gte=3,lte=50"`
+	Password  string `json:"password" binding:"required,gte=3,lte=32"`
 	AvatarUrl string `json:"avatar_url" binding:"required,url"`
 }
 
@@ -131,19 +131,19 @@ type PostInfo struct {
 }
 
 type PostParams struct {
-	Cover    string `json:"cover" binding:"required"`
-	Title    string `json:"title" binding:"required"`
-	Abstract string `json:"abstract" binding:"required"`
-	Content  string `json:"content" binding:"required"`
-	Public   bool   `json:"public" binding:"required,oneof=true,false"`
+	Cover    string `json:"cover" binding:"required" form:"cover"`
+	Title    string `json:"title" binding:"required,gte=1,lte=50" form:"title"`
+	Abstract string `json:"abstract" binding:"required,gte=1,lte=100" form:"abstract"`
+	Content  string `json:"content" binding:"required" form:"content"`
+	Public   bool   `json:"public" binding:"required" form:"public"`
 }
 
 type UpdatePostParams struct {
 	PostParams
-	PostID int64 `json:"post_id" binding:"required,gte=1"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
 }
 type ListPostInfosParams struct {
-	ListBy string `json:"list_by" binding:"required,oneof=infos,public,private,deleted,topping,star_num,visited_num"`
+	ListBy string `form:"list_by" binding:"required"`
 	Pagination
 }
 type ListPostInfosReply struct {
@@ -152,38 +152,38 @@ type ListPostInfosReply struct {
 }
 
 type ModifyPostDeletedParam struct {
-	PostID  int64 `json:"post_id" binding:"required,gte=1"`
-	Deleted bool  `json:"deleted" binding:"required,oneof=true,false"`
+	PostID  int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
+	Deleted bool  `json:"deleted" binding:"" form:"deleted"`
 }
 
 type ModifyPostPublicParam struct {
 	PostID int64 `json:"post_id" binding:"required,gte=1"`
-	Public bool  `json:"public" binding:"required,oneof=true,false"`
+	Public bool  `json:"public" binding:""`
 }
 
 type SearchPostInfosByKeyParam struct {
 	Pagination
-	Key string `json:"key" binding:"required,alphanumunicode"`
+	Key string `json:"key" binding:"required,gte=1,lte=15,alphanumunicode" form:"key"`
 }
 
 type SearchPostInfosByCreateTimeParam struct {
 	Pagination
-	StartTime time.Time `json:"start_time" binding:"required,datetime"`
-	EndTime   time.Time `json:"end_time" binding:"required,datetime"`
+	StartTime time.Time `json:"start_time" binding:"required,time" form:"start_time"`
+	EndTime   time.Time `json:"end_time" binding:"required,time" form:"end_time"`
 }
 
 type PostTagParams struct {
-	PostID int64 `json:"post_id" binding:"required,gte=1"`
-	TagID  int64 `json:"tag_id" binding:"required,gte=1"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
+	TagID  int64 `json:"tag_id" binding:"required,gte=1" form:"tag_id"`
 }
 
 type DeletePostTagParams struct {
-	PostID int64 `json:"post_id" binding:"required,gte=1"`
-	TagID  int64 `json:"tag_id" binding:"required,gte=1"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
+	TagID  int64 `json:"tag_id" binding:"required,gte=1" form:"tag_id"`
 }
 
 type ListTagsByPostIDParams struct {
-	PostID int64 `json:"post_id" binding:"required,gte=1"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
 	Pagination
 }
 
@@ -193,7 +193,7 @@ type ListTagsReply struct {
 }
 
 type ListPostInfosByTagIDParams struct {
-	TagID int64 `json:"tag_id" bind:"required,gte=1"`
+	TagID int64 `json:"tag_id" bind:"required,gte=1" form:"tag_id"`
 	Pagination
 }
 
@@ -203,21 +203,21 @@ type ListPostInfosByTagIDReply struct {
 }
 
 type TokenRedirectParams struct {
-	Code string `json:"code" bind:"required"`
+	Code string `form:"code" bind:"required,gte=1" form:"code"`
 }
 
 type AddTagParams struct {
-	TagName string `json:"tag_name" binding:"required,alphanumunicode"`
+	TagName string `json:"tag_name" binding:"required,gte=1,lte=10,alphanumunicode" form:"tag_name"`
 }
 
 type UpdateTagParams struct {
-	TagID   int64  `json:"tag_id" binding:"required,gte=1"`
-	TagName string `json:"tag_name" binding:"required,alphanumunicode"`
+	TagID   int64  `json:"tag_id" binding:"required,gte=1" form:"tag_id"`
+	TagName string `json:"tag_name" binding:"required,gte=1,lte=10,alphanumunicode" form:"tag_name"`
 }
 
 type UploadParams struct {
-	File     *multipart.FileHeader `json:"file,omitempty" binding:"required"`
-	FileType string                `json:"file_type,omitempty" binding:"required,oneof=file,image"`
+	File     *multipart.FileHeader `json:"file,omitempty" binding:"required" form:"file"`
+	FileType string                `json:"file_type,omitempty" binding:"required" form:"file_type"`
 }
 
 type GetTokenReply struct {
@@ -227,8 +227,8 @@ type GetTokenReply struct {
 }
 
 type RefreshTokenReplyParams struct {
-	Token   string `json:"token,omitempty"`
-	ReToken string `json:"re_token,omitempty"`
+	Token   string `json:"token,omitempty" binding:"required" form:"token"`
+	ReToken string `json:"re_token,omitempty" binding:"required" form:"re_token"`
 }
 
 type RefreshTokenReply struct {
@@ -244,13 +244,13 @@ type User struct {
 	ModifyTime    time.Time `json:"modify_time"`    //修改时间
 }
 type ListUsersByCreateTimeParams struct {
-	StartTime time.Time `json:"start_time" binding:"required,datetime"`
-	EndTime   time.Time `json:"end_time" binding:"required,datetime"`
+	StartTime time.Time `json:"start_time" binding:"required,time" form:"start_time"`
+	EndTime   time.Time `json:"end_time" binding:"required,time" form:"end_time"`
 	Pagination
 }
 type UserStarPostParams struct {
-	PostID int64 `json:"post_id,omitempty" binding:"required,gte=1"`
-	State  bool  `json:"state,omitempty" binding:"required,oneof=true,false"`
+	PostID int64 `json:"post_id" binding:"required,gte=1" form:"post_id"`
+	State  bool  `json:"state" binding:"" form:"state"`
 }
 type ListUsersReply struct {
 	Users []User `json:"users"`

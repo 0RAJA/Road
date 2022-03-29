@@ -1,6 +1,7 @@
 package token
 
 import (
+	"github.com/0RAJA/Road/internal/pkg/app/errcode"
 	"github.com/o1egl/paseto"
 	"golang.org/x/crypto/chacha20poly1305"
 	"time"
@@ -38,6 +39,9 @@ func (p *PasetoMaker) VerifyToken(token string) (*Payload, error) {
 	err := p.paseto.Decrypt(token, p.key, paload, nil)
 	if err != nil {
 		return nil, err
+	}
+	if paload.ExpiredAt.Before(time.Now()) {
+		return nil, errcode.UnauthorizedTokenTimeoutErr
 	}
 	return paload, nil
 }

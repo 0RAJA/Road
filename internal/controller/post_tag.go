@@ -83,7 +83,7 @@ func ListTagsByPostID(ctx *gin.Context) {
 	params := logic.ListTagsByPostIDParams{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
 	valid, errs := bind.BindAndValid(ctx, &params)
@@ -118,7 +118,7 @@ func ListPostInfosByTagID(ctx *gin.Context) {
 	params := logic.ListPostInfosByTagIDParams{
 		Pagination: logic.Pagination{
 			Page:     app.GetPage(ctx),
-			PageSize: app.GetPage(ctx),
+			PageSize: app.GetPageSize(ctx),
 		},
 	}
 	valid, errs := bind.BindAndValid(ctx, &params)
