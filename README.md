@@ -1,5 +1,5 @@
 A Road of Code
-
+go+mysql+redis 使用docker-compose部署,数据库挂载在本地
 已经完成了后端的建设，
 # 整体结构
 ```
