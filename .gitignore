@@ -18,3 +18,6 @@
 # IDE Configurations
 /.idea
 /configs/
+
+# upload files
+/uploads

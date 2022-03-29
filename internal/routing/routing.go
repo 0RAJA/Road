@@ -7,16 +7,25 @@ import (
 	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
 	mid "github.com/0RAJA/Road/internal/middleware"
+	"github.com/0RAJA/Road/internal/pkg/limiter"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"time"
 )
+
+var limit = limiter.NewPrefixLimiter().AddBuckets(limiter.BucketRule{
+	Key:          "/post/infos",
+	FillInterval: time.Second,
+	Cap:          100,
+	Quantum:      100,
+})
 
 func NewRouting() *gin.Engine {
 	r := gin.New()
-	r.Use(mid.Cors(), mid.GinRecovery(true), mid.GinLogger(), mid.Translations(), mid.Auth())
+	r.Use(mid.Cors(), mid.GinRecovery(true), mid.GinLogger(), mid.Translations(), mid.Auth(), mid.Limiter(limit))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Static("/static/", global.AllSetting.Upload.StaticPath) //静态资源位置
 	comment := r.Group("/comment")
