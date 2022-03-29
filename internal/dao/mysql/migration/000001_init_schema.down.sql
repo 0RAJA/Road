@@ -2,6 +2,8 @@ drop table if exists comment;
 
 drop table if exists manager;
 
+drop table if exists post_num;
+
 drop table if exists post_tag;
 
 drop table if exists tags;

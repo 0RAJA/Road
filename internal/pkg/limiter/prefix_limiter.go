@@ -19,7 +19,10 @@ func NewPrefixLimiter() *PrefixLimiter {
 func (p *PrefixLimiter) Key(c *gin.Context) string {
 	uri := c.Request.RequestURI
 	prefix := strings.Split(uri, "/")
-	return p.Get(prefix).(string)
+	if result := p.Get(prefix); result != nil {
+		return result.(string)
+	}
+	return ""
 }
 
 func (p *PrefixLimiter) testKey(uri string) string {

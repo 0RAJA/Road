@@ -131,11 +131,11 @@ type PostInfo struct {
 }
 
 type PostParams struct {
-	Cover    string `json:"cover" binding:"required" form:"cover"`
-	Title    string `json:"title" binding:"required,gte=1,lte=50" form:"title"`
-	Abstract string `json:"abstract" binding:"required,gte=1,lte=100" form:"abstract"`
-	Content  string `json:"content" binding:"required" form:"content"`
-	Public   bool   `json:"public" binding:"required" form:"public"`
+	Cover    string `json:"cover" binding:"required,gte=1"`
+	Title    string `json:"title" binding:"required,gte=1,lte=50"`
+	Abstract string `json:"abstract" binding:"required,gte=1,lte=100"`
+	Content  string `json:"content" binding:"required,gte=1"`
+	Public   bool   `json:"public" binding:""`
 }
 
 type UpdatePostParams struct {

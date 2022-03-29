@@ -2,7 +2,6 @@ package routing
 
 import (
 	"context"
-	_ "github.com/0RAJA/Road/docs"
 	"github.com/0RAJA/Road/internal/controller"
 	"github.com/0RAJA/Road/internal/global"
 	"github.com/0RAJA/Road/internal/logic"
@@ -11,10 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
+
 	"time"
 )
+
+var swagHandler gin.HandlerFunc
 
 var limit = limiter.NewPrefixLimiter().AddBuckets(limiter.BucketRule{
 	Key:          "/post/infos",
@@ -26,7 +26,10 @@ var limit = limiter.NewPrefixLimiter().AddBuckets(limiter.BucketRule{
 func NewRouting() *gin.Engine {
 	r := gin.New()
 	r.Use(mid.Cors(), mid.GinRecovery(true), mid.GinLogger(), mid.Translations(), mid.Auth(), mid.Limiter(limit))
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	//优化
+	if swagHandler != nil {
+		r.GET("/swagger/*any", swagHandler)
+	}
 	r.Static("/static/", global.AllSetting.Upload.StaticPath) //静态资源位置
 	comment := r.Group("/comment")
 	{

@@ -12,38 +12,36 @@ create table if not exists post
 (
     id          bigint                               not null
         primary key,
-    cover       text                                 not null,
-    title       text                                 not null,
-    abstract    text                                 not null,
-    content     text                                 not null,
+    cover       mediumtext                           not null,
+    title       mediumtext                           not null,
+    abstract    mediumtext                           not null,
+    content     mediumtext                           not null,
     public      tinyint(1) default 1                 not null,
     deleted     tinyint(1) default 0                 not null,
     create_time timestamp  default CURRENT_TIMESTAMP not null,
     modify_time timestamp  default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint post_id_uindex
         unique (id)
-);
+)
+    charset = utf8;
 
-create table comment
+create table if not exists comment
 (
     id            bigint                              not null
         primary key,
     post_id       bigint                              not null,
     username      varchar(10)                         not null,
-    content       text                                not null,
+    content       mediumtext                          not null,
     to_comment_id bigint    default 0                 not null,
     create_time   timestamp default CURRENT_TIMESTAMP not null,
     modify_time   timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint comment_id_uindex
         unique (id),
     constraint comment_post_id_fk
-        foreign key (post_id) references post (id)
+        foreign key (post_id) references road.post (id)
             on update cascade on delete cascade
-);
-
-create index comment_user_username_fk
-    on comment (username);
-
+)
+    charset = utf8;
 
 create table if not exists post_num
 (
@@ -68,7 +66,8 @@ create table if not exists tags
         unique (id),
     constraint tags_tag_name_uindex
         unique (tag_name)
-);
+)
+    charset = utf8;
 
 create table if not exists post_tag
 (
@@ -141,10 +140,6 @@ create table if not exists views
         unique (id)
 );
 
-# 解决中文字符问题
-ALTER TABLE road.post
-    CONVERT TO CHARACTER SET utf8;
-ALTER TABLE road.tags
-    CONVERT TO CHARACTER SET utf8;
-ALTER TABLE road.comment
-    CONVERT TO CHARACTER SET utf8;
+# 插入默认管理员--用户名:0RAJA 密码:12345
+insert manager (username, password, avatar_url)
+values ('0RAJA', '$2a$10$UhLdG/wYglcjhZ3LahHwjekbLqHJixsGF2SOi28IrpubvpkoPz53W', 'https://avatars.githubusercontent.com/u/76676061?v=4')

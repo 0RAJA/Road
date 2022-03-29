@@ -8,7 +8,7 @@ migrate_install:
 migrate_init_db:
 	migrate create -ext sql -dir internal/dao/mysql/db/migration -seq init_schema
 migrate_up:
-	migrate -path internal/dao/mysql/db/migration -database 'mysql://root:WW876001@tcp(localhost:3306)/road' --verbose up
+	./migrate -host=localhost -source=internal/dao/mysql/migration
 sqlc:
 	sqlc generate
 test:
@@ -17,4 +17,12 @@ server:
 	go run main.go
 swag:
 	swag init
+docker_net:
+	docker network create road
+docker_connect:
+	docker network connect road mysql57 & docker network connect road redis62
+docker_build:
+	docker build -t road:test .
+docker_run:
+	 docker run --name road -p 8080:8080 --net road -it -d road:test
 #-e TZ=Asia/Shanghai -e default-time_zone='+8:00'
