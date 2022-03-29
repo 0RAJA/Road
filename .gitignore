@@ -21,3 +21,6 @@
 
 # upload files
 /uploads
+
+# database
+/database

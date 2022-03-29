@@ -25,5 +25,5 @@ COPY --from=builder /app/main .
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/start.sh"]
-CMD ["/app/main"]
+#ENTRYPOINT ["/app/start.sh"]
+#CMD ["/app/main"]
