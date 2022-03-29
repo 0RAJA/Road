@@ -1,0 +1,88 @@
+Server:
+  RunMode: debug
+  Address: :8080
+  ReadTimeout: 5s
+  WriteTimeout: 5s
+  DefaultContextTimeout: 30s #默认超时时间
+App:
+  Name: Road
+  Version: 1.0.0
+  StartTime: 2002-03-26
+  Format: 2006-01-02
+  Logo: Raja
+Log:
+  Level: release
+  LogSavePath: storage/Applogs/ # 日志保存路径
+  HighLevelFile: error          # 高级别日志文件名
+  LowLevelFile: info          # 低级别文件名
+  LogFileExt: .log          # 日志文件后缀
+  MaxSize: 200
+  MaxAge: 30
+  MaxBackups: 7
+  Compress: false
+Mysql:
+  DriverName: mysql # 驱动名
+  SourceName: "root:WW876001@tcp(mysql57:3306)/road?parseTime=true&charset=utf8"
+  MaxIdleConns: 200
+  MaxOpenConns: 50
+Redis:
+  Address: "redis62:7963"
+  DB: 0
+  Password: WW876001
+  PoolSize: 100 #连接池
+  PostTimeout: 20m # 帖子过期时间
+  PostInfoTimeout: 1h
+Email: # 用来panic时警告
+  Host: smtp.qq.com
+  Port: 465
+  UserName: #xxx@qq.com
+  Password: #密钥
+  IsSSL: true
+  From: # xxx@qq.com
+  To:
+    - # 自己的邮箱xxxx@qq.com
+Pagelines: # 分页
+  DefaultPageSize: 5
+  MaxPageSize: 10
+  PageKey: page
+  PageSizeKey: page_size
+Token:
+  Key: 12345678123456781234567812345678 # 用于passto生成token时的密钥，至少32位
+  AssessTokenDuration: 24h
+  RefreshTokenDuration: 24h
+  AuthorizationType: bearer # 承载前缀
+Github: # 用于github认证
+  ClientID: #"客户端ID"
+  ClientSecret: # "客户端密钥"
+  RedirectUri: # "回调链接"
+Rule:
+  UsernameLen: 50
+  PasswordLen: 32
+  DefaultAvatarUrl: "https://avatars.githubusercontent.com/u/76676061?v=4" # 默认头像链接
+  CommentLen: 100
+  TitleLen: 50
+  AbstractLen: 100
+  TagLen: 10
+  EndurancePostStarTime: 10m
+  EndurancePostViews: 10m
+  EnduranceViewTime: 20m
+Upload:
+  StaticPath: "/home/raja/workspace/go/src/Road/uploads" # 本地保存的文件路径
+  Image:
+    Type: "image" # 类型
+    MaxSize: 20971520 # 最大大小
+    UrlPrefix: http://127.0.0.1:8080/static/images # 返回的URL的前缀
+    LocalPath: uploads/images # 本地保存的路径
+    Suffix:
+      - .PNG
+      - .SVG
+      - .JPG
+      - .WEBP
+      - .BMP
+  File:
+    Type: "file"
+    MaxSize: 52428800
+    UrlPrefix: http://127.0.0.1:8080/static/files
+    LocalPath: uploads/files
+    Suffix:
+      - "*"

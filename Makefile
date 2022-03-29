@@ -24,5 +24,11 @@ docker_connect:
 docker_build:
 	docker build -t road:test .
 docker_run:
-	 docker run --name road -p 8080:8080 --net road -it -d road:test
+	docker run --name road -p 8080:8080 --net road -it -d road:test
+docker-compose_up:
+	docker-compose up
+docker-compose_down:
+	docker-compose down
+docker-compose_stop:
+	docker-compose stop
 #-e TZ=Asia/Shanghai -e default-time_zone='+8:00'

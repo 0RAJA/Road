@@ -17,7 +17,7 @@
 
 # IDE Configurations
 /.idea
-/configs/
+/configs/app/
 
 # upload files
 /uploads

@@ -12,6 +12,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
+//用于数据库的迁移
+
 var (
 	sourceURL string
 	host      string
