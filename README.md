@@ -29,3 +29,4 @@ A Road of Code
 # 须知
 数据库的数据和配置文件挂载在本地，需要查看接口文档只需要更改`Dockerfile`中`RUN go build -o main main.go`为`RUN go build -tags "doc" -o main main.go`
 然后浏览器访问 `http//http://127.0.0.1:8080/swagger/index.html#/` 即可
+默认管理员账号 用户名`0RAJA` 密码`123456`
