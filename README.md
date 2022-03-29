@@ -2,6 +2,7 @@ A Road of Code
 
 已经完成了后端的建设，
 # 整体结构
+```
 ├── cmd 辅助可执行文件(数据库迁移文件，测试文件)
 ├── configs (配置文件路径)
 ├── database (容器持久化路径)
@@ -20,10 +21,11 @@ A Road of Code
 ├── test.md (redis的默认配置文件)
 ├── uploads (上传文件所在区)
 └── wait-for.sh (用于等待redis，mysql启动后再启动road)
+```
 # 启动方式
 1. 先创建configs/app/app.yml(按照configs/model/app.yml为模板)，然后根据自己设备的配置进行设置。
 2. 修改docker-compose.yml中挂载在本地的路径为自己设备的路径
 3. 然后`docker-compose up` 一键部署启动
 # 须知
 数据库的数据和配置文件挂载在本地，需要查看接口文档只需要更改`Dockerfile`中`RUN go build -o main main.go`为`RUN go build -tags "doc" -o main main.go`
-然后浏览器访问`http//`
+然后浏览器访问 `http//http://127.0.0.1:8080/swagger/index.html#/` 即可
