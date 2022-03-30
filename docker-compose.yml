@@ -39,6 +39,10 @@ services:
       - redis
     networks:
       - road
+    volumes:
+      - "/home/raja/workspace/go/src/Road/database/road/configs:/app/configs" #默认配置文件
+      - "/home/raja/workspace/go/src/Road/database/road/storage:/app/storage" #默认日志
+      - "/home/raja/workspace/go/src/Road/database/road/uploads:/app/uploads" #上传服务
     entrypoint: [ "/app/wait-for.sh","redis62:7963","mysql57:3306","--","/app/start.sh" ]
     command: [ "/app/main" ]
 networks:

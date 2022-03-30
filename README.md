@@ -1,8 +1,9 @@
 A Road of Code
 
-go+mysql+redis 使用docker-compose部署,数据库挂载在本地
-已经完成了后端的基础建设，
+go+mysql+redis 使用docker-compose部署,数据库挂载在本地 已经完成了后端的基础建设，
+
 # 整体结构
+
 ```
 ├── cmd 辅助可执行文件(数据库迁移文件，测试文件)
 ├── configs (配置文件路径)
@@ -23,11 +24,17 @@ go+mysql+redis 使用docker-compose部署,数据库挂载在本地
 ├── uploads (上传文件所在区)
 └── wait-for.sh (用于等待redis，mysql启动后再启动road)
 ```
+
 # 启动方式
+
 1. 先创建configs/app/app.yml(按照configs/model/app.yml为模板)，然后根据自己设备的配置进行设置。
 2. 修改docker-compose.yml中挂载在本地的路径为自己设备的路径
 3. 然后`docker-compose up` 一键部署启动
+
 # 须知
-数据库的数据和配置文件挂载在本地，需要查看接口文档只需要更改`Dockerfile`中`RUN go build -o main main.go`为`RUN go build -tags "doc" -o main main.go`
-然后浏览器访问 `http//http://127.0.0.1:8080/swagger/index.html#/` 即可
-默认管理员账号 用户名`0RAJA` 密码`123456`
+
+1. 数据库的数据和配置文件挂载在本地，需要查看接口文档只需要更改`Dockerfile`中`RUN go build -o main main.go`为`RUN go build -tags "doc" -o main main.go`
+   然后浏览器访问 `http//http://127.0.0.1:8080/swagger/index.html#/` 即可
+2. 默认管理员账号 用户名`0RAJA` 密码`123456`
+3. 需要将配置文件先放到宿主机挂载的路径下再启动项目，否则配置文件会被覆盖为空。注意给宿主机挂载的路径开启权限，否则可能出现权限报错
+4. 升级https `https://certbot.eff.org/instructions?ws=nginx&os=centosrhel7`

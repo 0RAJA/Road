@@ -16,11 +16,8 @@ FROM alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/start.sh .
-COPY --from=builder /app/wait-for.sh .
 COPY --from=builder /app/migrate ./migrate
 COPY --from=builder /app/internal/dao/mysql/migration ./migration
-COPY --from=builder /app/configs ./configs
 COPY --from=builder /app/main .
 
 EXPOSE 8080
