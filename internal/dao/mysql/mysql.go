@@ -3,21 +3,15 @@ package mysql
 import (
 	"database/sql"
 	"errors"
-	"github.com/0RAJA/Road/internal/dao/mysql/sqlc"
-	"github.com/0RAJA/Road/internal/global"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var (
-	Query *db.Queries
-)
-
-func Init() {
-	conn, err := sql.Open(global.AllSetting.Mysql.DriverName, global.AllSetting.Mysql.SourceName)
+func mysqlInit(driverName, dataSourceName string) *sql.DB {
+	conn, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		panic(err)
 	}
-	Query = db.New(conn)
+	return conn
 }
 
 func IsNil(err error) bool {

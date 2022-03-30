@@ -13,3 +13,6 @@
 {"level":"INFO","ts":"2022-03-29T18:34:24.692+0800","caller":"Road/main.go:61","msg":"ShutDown Server..."}
 {"level":"INFO","ts":"2022-03-29T18:34:24.692+0800","caller":"Road/main.go:47","msg":"http: Server closed"}
 {"level":"INFO","ts":"2022-03-29T18:34:24.694+0800","caller":"Road/main.go:51","msg":"Exit!"}
+{"level":"INFO","ts":"2022-03-30T13:35:28.066+0800","caller":"Road/main.go:61","msg":"ShutDown Server..."}
+{"level":"INFO","ts":"2022-03-30T13:35:28.066+0800","caller":"Road/main.go:47","msg":"http: Server closed"}
+{"level":"INFO","ts":"2022-03-30T13:35:28.069+0800","caller":"Road/main.go:51","msg":"Exit!"}

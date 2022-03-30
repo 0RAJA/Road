@@ -109,8 +109,8 @@ func SetupSetting() {
 	myPanic(err)
 	initLog()
 	initUpload()
-	mysql.Init()
-	redis.Init()
+	mysql.QueryInit(global.AllSetting.Mysql.DriverName, global.AllSetting.Mysql.SourceName)
+	redis.QueryInit(global.AllSetting.Redis.Address, global.AllSetting.Redis.Password, global.AllSetting.Redis.PoolSize, global.AllSetting.Redis.DB)
 	app.Init(global.AllSetting.Pagelines.DefaultPageSize, global.AllSetting.Pagelines.MaxPageSize, global.AllSetting.Pagelines.PageKey, global.AllSetting.Pagelines.PageSizeKey)
 }
 func myPanic(err error) {

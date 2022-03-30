@@ -20,7 +20,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&sourceURL, "source", "internal/dao/mysql/migration", "migration文件夹路径")
+	flag.StringVar(&sourceURL, "source", "migration", "migration文件夹路径")
 	flag.StringVar(&host, "host", "mysql57", "mysql host名称")
 	flag.Parse()
 	db, err := sql.Open("mysql", fmt.Sprintf("root:WW876001@tcp(%s:3306)/road?multiStatements=true", host))
