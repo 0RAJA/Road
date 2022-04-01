@@ -8,7 +8,7 @@ migrate_install:
 migrate_init_db:
 	migrate create -ext sql -dir internal/dao/mysql/db/migration -seq init_schema
 migrate_up:
-	./migrate -host=localhost -source=internal/dao/mysql/migration
+	./migrate -addr=localhost:3306 -source=internal/dao/mysql/migration -dbName=road -auth=root:WW876001
 sqlc:
 	sqlc generate
 test:

@@ -16,14 +16,18 @@ import (
 
 var (
 	sourceURL string
-	host      string
+	address   string
+	dbName    string
+	auth      string
 )
 
 func main() {
 	flag.StringVar(&sourceURL, "source", "migration", "migration文件夹路径")
-	flag.StringVar(&host, "host", "mysql57", "mysql host名称")
+	flag.StringVar(&address, "addr", "mysql57:3306", "mysql address")
+	flag.StringVar(&dbName, "dbName", "road", "数据库名")
+	flag.StringVar(&auth, "auth", "root:WW876001", "用户名:密码")
 	flag.Parse()
-	db, err := sql.Open("mysql", fmt.Sprintf("root:WW876001@tcp(%s:3306)/road?multiStatements=true", host))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s@tcp(%s)/%s?multiStatements=true", auth, address, dbName))
 	if err != nil {
 		panic(err)
 	}

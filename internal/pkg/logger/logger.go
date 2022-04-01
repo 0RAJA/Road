@@ -66,7 +66,7 @@ func getEncoder() zapcore.Encoder {
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
-	return zapcore.NewJSONEncoder(encoderConfig) //Json格式
+	return zapcore.NewConsoleEncoder(encoderConfig) //普通的Log Encoder
 }
 
 func getLogWriter(filename string) zapcore.WriteSyncer {
