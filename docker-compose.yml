@@ -1,0 +1,46 @@
+version: "3.8"
+volumes:
+  mysql:
+  redis:
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql57
+    privileged: true
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: road
+      MYSQL_ROOT_PASSWORD: WW876001
+      LANG: C.UTF-8
+      character_set_database: utf8
+    volumes:
+      - mysql:/var/lib/mysql # 数据库
+  redis:
+    image: redis:6.2
+    container_name: redis62
+    privileged: true # 权限
+    ports:
+      - "7964:7963"
+    volumes:
+      - /home/raja/workspace/go/src/Road/database/redis/conf/redis.conf:/redis/redis.conf #配置文件
+      - redis:/redis/data #数据库
+    entrypoint: [ "redis-server","/redis/redis.conf" ]
+  road:
+    build:
+      context: .  # context 选项可以是 Dockerfile 的文件路径，也可以是到链接到 git 仓库的 url。
+      dockerfile: Dockerfile
+    container_name: road
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - /home/raja/workspace/go/src/Road/database/road/configs:/app/configs #默认配置文件
+      - /home/raja/workspace/go/src/Road/database/road/storage:/app/storage #默认日志
+      - /home/raja/workspace/go/src/Road/database/road/uploads:/app/uploads #上传服务
+    entrypoint: [ "/app/wait-for.sh","redis62:7963","mysql57:3306","--","/app/start.sh" ]
+    command: [ "/app/main" ]
+
+

@@ -1,0 +1,1928 @@
+basePath: /road/
+definitions:
+  errcode.Error:
+    properties:
+      code:
+        type: integer
+      details:
+        items:
+          type: string
+        type: array
+      msg:
+        type: string
+    type: object
+  logic.Comment:
+    properties:
+      avatar_url:
+        description: 头像链接
+        type: string
+      content:
+        description: 内容
+        type: string
+      create_time:
+        description: 创建时间
+        type: string
+      depository_url:
+        description: 仓库连接
+        type: string
+      id:
+        description: 评论ID
+        type: integer
+      modify_time:
+        description: 修改时间
+        type: string
+      post_id:
+        description: 帖子ID
+        type: integer
+      to_comment_id:
+        description: 回复的评论的ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    type: object
+  logic.GetTokenReply:
+    properties:
+      re_token:
+        $ref: '#/definitions/logic.ReToken'
+        description: ReToken
+      token:
+        $ref: '#/definitions/logic.Token'
+        description: Token
+      user:
+        $ref: '#/definitions/logic.UserInfo'
+        description: 用户信息
+    type: object
+  logic.ListCommentByPostIDReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.Comment'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.ListManagerReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.Manager'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.ListPostInfosByTagIDReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.PostInfo'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.ListPostInfosReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.PostInfo'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.ListTagsReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.Tag'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.ListUsersReply:
+    properties:
+      pager:
+        $ref: '#/definitions/logic.Pager'
+      users:
+        items:
+          $ref: '#/definitions/logic.User'
+        type: array
+    type: object
+  logic.ListViewsByCreateTimeReply:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/logic.View'
+        type: array
+      pager:
+        $ref: '#/definitions/logic.Pager'
+    type: object
+  logic.LoginManagerReply:
+    properties:
+      avatar_url:
+        description: 头像链接
+        type: string
+      expiredAt:
+        description: '"过期时间"`'
+        type: string
+      refreshToken:
+        description: '"刷新token"`'
+        type: string
+      token:
+        description: '"token"`'
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+  logic.Manager:
+    properties:
+      avatar_url:
+        description: 头像链接
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+  logic.Pager:
+    properties:
+      page:
+        description: 页数
+        type: integer
+      page_size:
+        description: 一页的大小
+        type: integer
+      total_rows:
+        description: 结果的总数量
+        type: integer
+    type: object
+  logic.Post:
+    properties:
+      abstract:
+        description: 简介
+        type: string
+      content:
+        description: 内容
+        type: string
+      cover:
+        description: 帖子封面ID
+        type: string
+      create_time:
+        description: 创建时间
+        type: string
+      deleted:
+        description: 是否删除
+        type: boolean
+      id:
+        description: 帖子ID
+        type: integer
+      modify_time:
+        description: 修改时间
+        type: string
+      public:
+        description: 是否公开
+        type: boolean
+      star_num:
+        description: 点赞数
+        type: integer
+      title:
+        description: 标题
+        type: string
+      visited_num:
+        description: 访问数
+        type: integer
+    type: object
+  logic.PostInfo:
+    properties:
+      abstract:
+        description: 简介
+        type: string
+      cover:
+        description: 帖子封面ID
+        type: string
+      create_time:
+        description: 创建时间
+        type: string
+      deleted:
+        description: 是否删除
+        type: boolean
+      id:
+        description: 帖子ID
+        type: integer
+      modify_time:
+        description: 修改时间
+        type: string
+      public:
+        description: 是否公开
+        type: boolean
+      star_num:
+        description: 点赞数
+        type: integer
+      title:
+        description: 标题
+        type: string
+      visited_num:
+        description: 访问数
+        type: integer
+    type: object
+  logic.ReToken:
+    properties:
+      expiredAt:
+        description: '"过期时间"`'
+        type: string
+      refreshToken:
+        description: '"刷新token"`'
+        type: string
+    type: object
+  logic.RefreshTokenReply:
+    properties:
+      token:
+        $ref: '#/definitions/logic.Token'
+        description: Token
+    type: object
+  logic.Tag:
+    properties:
+      create_time:
+        description: 创建时间
+        type: string
+      id:
+        description: 标签ID
+        type: integer
+      tag_name:
+        description: 标签名
+        type: string
+    type: object
+  logic.Token:
+    properties:
+      expiredAt:
+        description: '"过期时间"`'
+        type: string
+      token:
+        description: '"token"`'
+        type: string
+    type: object
+  logic.User:
+    properties:
+      address:
+        description: IP地址
+        type: string
+      avatar_url:
+        description: 头像链接
+        type: string
+      create_time:
+        description: 创建时间
+        type: string
+      depository_url:
+        description: 仓库连接
+        type: string
+      modify_time:
+        description: 修改时间
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+  logic.UserInfo:
+    properties:
+      avatar_url:
+        description: '"头像链接"`'
+        type: string
+      depository_url:
+        description: '"仓库链接"`'
+        type: string
+      username:
+        description: '"用户名"`'
+        type: string
+    type: object
+  logic.View:
+    properties:
+      create_time:
+        description: 截止时间
+        type: string
+      id:
+        description: ID
+        type: integer
+      views_num:
+        description: 访问数
+        type: integer
+    type: object
+host: humraja.com
+info:
+  contact: {}
+  description: The Road Of Code
+  license:
+    name: Raja
+    url: https://github.com/0RAJA
+  title: Road
+  version: "1.0"
+paths:
+  /comment:
+    get:
+      consumes:
+      - application/json
+      description: 根据post_id和偏移量显示一个帖子的部分评论的内容
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 需要显示评论的帖子ID
+        in: query
+        name: post_id
+        required: true
+        type: integer
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回评论的信息
+          schema:
+            items:
+              $ref: '#/definitions/logic.ListCommentByPostIDReply'
+            type: array
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 显示评论
+      tags:
+      - 评论
+    post:
+      consumes:
+      - application/json
+      description: 创建一个对于帖子的评论或对评论的回复
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 评论内容 1<=len<=100
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: 回复的评论ID
+        in: body
+        name: to_comment_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 创建评论
+      tags:
+      - 评论
+    put:
+      consumes:
+      - application/json
+      description: 修改一个评论的内容
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 需要修改的评论ID
+        in: body
+        name: comment_id
+        required: true
+        schema:
+          type: integer
+      - description: 评论修改后的内容 1<=len<=100
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 修改评论
+      tags:
+      - 评论
+  /comment/{comment_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个评论
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 需要删除的评论ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除评论
+      tags:
+      - 评论
+  /manager:
+    get:
+      consumes:
+      - application/json
+      description: 列出管理员
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回管理员的用户名
+          schema:
+            $ref: '#/definitions/logic.ListManagerReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出管理员
+      tags:
+      - 管理员
+    put:
+      consumes:
+      - application/json
+      description: 修改管理员头像和密码，空字符串表示不修改
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 新密码 6<=len<=32
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      - description: 新头像链接
+        in: body
+        name: avatar_url
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 修改管理员头像和密码
+      tags:
+      - 管理员
+  /manager/{username}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个管理员
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除管理员
+      tags:
+      - 管理员
+  /manager/check/{username}:
+    get:
+      consumes:
+      - application/json
+      description: 检查管理员名是否存在
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名 3<=len<=50
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回是否存在此管理员
+          schema:
+            type: bool
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 检查管理员名是否存在
+      tags:
+      - 管理员
+  /manager/create:
+    post:
+      consumes:
+      - application/json
+      description: 添加一个管理员的信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名 3<=len<=50
+        in: body
+        name: username
+        required: true
+        schema:
+          type: integer
+      - description: 密码 6<=len<=32
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      - description: 头像链接
+        in: body
+        name: avatar_url
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 添加管理员
+      tags:
+      - 管理员
+  /manager/login:
+    post:
+      consumes:
+      - application/json
+      description: 用于管理员使用账号和密码进行登录
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名 3<=len<=50
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码 6<=len<=32
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回用户信息和授权码
+          schema:
+            $ref: '#/definitions/logic.LoginManagerReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 管理员登录
+      tags:
+      - 管理员
+  /post/{post_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 将一个处于删除状态的帖子真正删除
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 真正删除一个帖子
+      tags:
+      - 文章
+  /post/create:
+    post:
+      consumes:
+      - application/json
+      description: 新增一个帖子的封面，标题，简介，内容以及确定其是否公开
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 封面链接
+        in: body
+        name: cover
+        required: true
+        schema:
+          type: string
+      - description: 标题 1<=len<=50
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: 简介 1<=len<=100
+        in: body
+        name: abstract
+        required: true
+        schema:
+          type: string
+      - description: 内容
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: 是否公开 Enums[true,false]
+        in: body
+        name: public
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 新增帖子
+      tags:
+      - 文章
+  /post/delete:
+    put:
+      consumes:
+      - application/json
+      description: 修改一个帖子删除状态
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 帖子删除状态,默认为false
+        in: body
+        name: deleted
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 修改一个帖子删除状态
+      tags:
+      - 文章
+  /post/info/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个帖子的简介信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回一个帖子的ID,封面，标题，简介，是否公开,是否删除以及,创建时间和修改时间以及点赞数和访问数和其对应标签的信息
+          schema:
+            $ref: '#/definitions/logic.PostInfo'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取一个帖子的简介信息
+      tags:
+      - 文章
+  /post/infos:
+    get:
+      consumes:
+      - application/json
+      description: 列出帖子简介，默认按创建时间倒序
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 列出什么类型的帖子 Enums(infos,public,private,deleted,topping,star_num,visited_num)
+          分别对应默认时间排序，公开的，私密的，删除的，置顶的，点赞数排序，访问数排序
+        enum:
+        - infos
+        - public
+        - private
+        - deleted
+        - topping
+        - star_num
+        - visited_num
+        in: query
+        name: list_by
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子简介的数组和描述数组大小的信息
+          schema:
+            $ref: '#/definitions/logic.ListPostInfosReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出帖子简介
+      tags:
+      - 文章
+  /post/infos/search:
+    get:
+      consumes:
+      - application/json
+      description: 通过关键字搜索帖子的标题和简介，默认按置顶先后倒序
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 关键字 1<=len<=15
+        in: query
+        name: key
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子简介的数组和描述数组大小的信息
+          schema:
+            $ref: '#/definitions/logic.ListPostInfosReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 通过关键字搜索帖子的标题和简介
+      tags:
+      - 文章
+  /post/infos/time:
+    get:
+      consumes:
+      - application/json
+      description: 通过时间段来检索帖子，默认按创建时间先后倒序
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 起始时间 (2002-03-26)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26)
+        in: query
+        name: end_time
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子简介的数组和描述数组大小的信息
+          schema:
+            $ref: '#/definitions/logic.ListPostInfosReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 通过时间段来检索帖子
+      tags:
+      - 文章
+  /post/infos/visit/grow:
+    get:
+      consumes:
+      - application/json
+      description: 通过按新增访问数排序的帖子简介信息，按新增访问数由高到低排序
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子简介的数组和描述数组大小的信息
+          schema:
+            $ref: '#/definitions/logic.ListPostInfosReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 通过按新增访问数排序的帖子简介信息
+      tags:
+      - 文章
+  /post/post/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个帖子的完整信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取一个帖子的ID,封面，标题，简介，内容,是否公开,是否删除以及,创建时间,修改时间,点赞数和浏览数
+          schema:
+            $ref: '#/definitions/logic.Post'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取一个帖子的完整信息
+      tags:
+      - 文章
+  /post/public:
+    put:
+      consumes:
+      - application/json
+      description: 修改一个帖子公开状态
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 帖子公开状态,默认为false
+        in: body
+        name: public
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 修改一个帖子公开状态
+      tags:
+      - 文章
+  /post/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新一个帖子的封面，标题，简介，内容以及确定其是否公开
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 封面链接
+        in: body
+        name: cover
+        required: true
+        schema:
+          type: string
+      - description: 标题
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: 简介
+        in: body
+        name: abstract
+        required: true
+        schema:
+          type: string
+      - description: 内容
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: 是否公开
+        in: body
+        name: public
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 更新帖子
+      tags:
+      - 文章
+  /postTag:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个帖子的标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 标签ID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除一个帖子的标签
+      tags:
+      - 文章和标签
+    post:
+      consumes:
+      - application/json
+      description: 给一个帖子加上一个标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 标签ID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 给一个帖子加上一个标签
+      tags:
+      - 文章和标签
+  /postTag/infos:
+    get:
+      consumes:
+      - application/json
+      description: 列出一个标签对应的所有帖子简介信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签ID
+        in: query
+        name: tag_id
+        required: true
+        type: integer
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子对应的所有标签的信息
+          schema:
+            $ref: '#/definitions/logic.ListPostInfosByTagIDReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出一个标签对应的所有帖子简介信息
+      tags:
+      - 文章和标签
+  /postTag/tags:
+    get:
+      consumes:
+      - application/json
+      description: 列出一个帖子对应的所有标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: query
+        name: post_id
+        required: true
+        type: integer
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子对应的所有标签的信息
+          schema:
+            $ref: '#/definitions/logic.ListTagsReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出一个帖子对应的所有标签
+      tags:
+      - 文章和标签
+  /star:
+    put:
+      consumes:
+      - application/json
+      description: 用户对某个帖子点赞或取消点赞
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: body
+        name: post_id
+        required: true
+        schema:
+          type: integer
+      - description: 点赞状态 Enums(true,false) 默认为false
+        enum:
+        - true
+        - false
+        in: body
+        name: state
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 用户对某个帖子点赞或取消点赞
+      tags:
+      - user_star
+  /star/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过post_id获取用户对于某个帖子的点赞情况
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: true表示已经点过赞，false表示没有
+          schema:
+            type: bool
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取用户对于某个帖子的点赞情况
+      tags:
+      - user_star
+  /tag:
+    get:
+      consumes:
+      - application/json
+      description: 列出标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子对应的所有标签的信息
+          schema:
+            $ref: '#/definitions/logic.ListTagsReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出标签
+      tags:
+      - 标签
+    post:
+      consumes:
+      - application/json
+      description: 增加一个标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签名
+        in: body
+        name: tag_name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 增加一个标签
+      tags:
+      - 标签
+    put:
+      consumes:
+      - application/json
+      description: 修改一个标签的名字
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签ID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: integer
+      - description: 更改后名字
+        in: body
+        name: tag_name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 修改一个标签的名字
+      tags:
+      - 标签
+  /tag/{tag_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个标签
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签ID
+        in: path
+        name: tag_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除一个标签
+      tags:
+      - 标签
+  /tag/check{tag_name}:
+    get:
+      consumes:
+      - application/json
+      description: 判断标签名是否存在
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 标签名
+        in: query
+        name: tag_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子对应的所有标签的信息
+          schema:
+            $ref: '#/definitions/logic.ListTagsReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 判断标签名是否存在
+      tags:
+      - 标签
+  /token/get:
+    get:
+      consumes:
+      - application/json
+      description: 用户将被重定向到github授权，服务器会得到授权后返回用户信息和token,retoken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回用户信息和token以及retoken
+          schema:
+            $ref: '#/definitions/logic.GetTokenReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取token
+      tags:
+      - auth
+  /token/refresh:
+    put:
+      consumes:
+      - application/json
+      description: 将过期的token和未过期的retoken换取新的token
+      parameters:
+      - description: 过期的token
+        in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - description: 未过期的刷新token
+        in: body
+        name: re_token
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回用户信息和新的token
+          schema:
+            $ref: '#/definitions/logic.RefreshTokenReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 刷新token
+      tags:
+      - auth
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传图片
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 文件类型 Enums(image,file)
+        enum:
+        - image
+        - file
+        in: body
+        name: file_type
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传文件的url
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 上传服务，目前支持图片(png,svg,jpg,webp,bmp,20m以内)和文件(50m以内)
+      tags:
+      - Upload
+  /user/{username}:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的用户名，头像链接，仓库链接，ip地址，创建时间，修改时间
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/logic.User'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取用户信息
+      tags:
+      - user
+  /user/createTime:
+    get:
+      consumes:
+      - application/json
+      description: 通过时间段来检索用户信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 起始时间 (2002-03-26 09:00:00)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26 09:00:00)
+        in: query
+        name: end_time
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回帖子简介的数组和描述数组大小的信息
+          schema:
+            $ref: '#/definitions/logic.ListUsersReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 通过时间段来检索用户信息
+      tags:
+      - user
+  /user/users:
+    get:
+      consumes:
+      - application/json
+      description: 列出用户的用户名，头像链接，仓库链接，ip地址，创建时间，修改时间
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/logic.ListUsersReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 列出用户信息
+      tags:
+      - user
+  /views/all:
+    get:
+      consumes:
+      - application/json
+      description: 获取时间段内的访问数量
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 起始时间 (2002-03-26 09:00:00)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: 结束时间 (2002-03-26 09:00:00)
+        in: query
+        name: end_time
+        required: true
+        type: string
+      - description: 页码 default 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量 default and max 10
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 指定时间内的所有访问数
+          schema:
+            $ref: '#/definitions/logic.ListViewsByCreateTimeReply'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取时间段内的访问数量
+      tags:
+      - views
+  /views/post/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定帖子的新增访问量
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回对应帖子的新增访问量
+          schema:
+            type: int64
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取指定帖子的新增访问量
+      tags:
+      - views
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
