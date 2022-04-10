@@ -16,9 +16,14 @@ FROM alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/migrate ./migrate
+COPY --from=builder /app/wait-for.sh .
+COPY --from=builder /app/migrate .
 COPY --from=builder /app/internal/dao/mysql/migration ./migration
 COPY --from=builder /app/main .
+COPY --from=builder /app/start.sh .
+
+RUN chmod +x wait-for.sh
+RUN chmod +x start.sh
 
 EXPOSE 8080
 

@@ -13,6 +13,7 @@ import (
 	"github.com/0RAJA/Road/internal/pkg/token"
 	"github.com/0RAJA/Road/internal/pkg/upload"
 	"github.com/0RAJA/Road/internal/routing"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"os/signal"
@@ -33,6 +34,9 @@ import (
 // @securityDefinitions.basic  BasicAuth
 func main() {
 	SetupSetting()
+	if global.AllSetting.Server.RunMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := routing.NewRouting()
 	s := &http.Server{
 		Addr:           global.AllSetting.Server.Address,

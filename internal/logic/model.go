@@ -18,8 +18,8 @@ type Pager struct {
 
 type AddCommentParams struct {
 	PostID      int64  `json:"post_id" binding:"required,gte=1" form:"post_id"`
-	Content     string `json:"content" bind:"required,gte=1,lte=100" form:"content"`
-	ToCommentID int64  `json:"to_comment_id" bind:"required,gte=0" form:"to_comment_id"`
+	Content     string `json:"content" binding:"required,gte=1,lte=100" form:"content"`
+	ToCommentID int64  `json:"to_comment_id" binding:"required,gte=0" form:"to_comment_id"`
 }
 
 type ModifyCommentParams struct {

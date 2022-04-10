@@ -21,7 +21,7 @@ import (
 // @Success 200 {string} string  ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /star [put]
+// @Router /star/update [put]
 func UserStarPost(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.UserStarPostParams{}
