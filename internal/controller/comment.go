@@ -30,7 +30,7 @@ func checkComment(comment string) *errcode.Error {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /comment [post]
+// @Router /comment/add [post]
 func AddComment(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	var params logic.AddCommentParams
@@ -89,7 +89,7 @@ func DeleteComment(ctx *gin.Context) {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /comment [put]
+// @Router /comment/update [put]
 func ModifyComment(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	var params logic.ModifyCommentParams
@@ -122,7 +122,7 @@ func ModifyComment(ctx *gin.Context) {
 // @Success 200 {array} logic.ListCommentByPostIDReply "返回评论的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /comment [get]
+// @Router /comment/list [get]
 func ListComments(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.ListCommentByPostIDParams{

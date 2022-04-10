@@ -20,7 +20,7 @@ import (
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /postTag [post]
+// @Router /postTag/add [post]
 func AddPostTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.PostTagParams{}
@@ -48,7 +48,7 @@ func AddPostTag(ctx *gin.Context) {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /postTag [delete]
+// @Router /postTag/delete [delete]
 func DeletePostTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.DeletePostTagParams{}

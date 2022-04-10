@@ -86,12 +86,3 @@ func (e *Error) StatusCode() int {
 	}
 	return http.StatusInternalServerError
 }
-
-func SwitchErrorCode(err interface{}) *Error {
-	switch err.(type) {
-	case *Error:
-		return err.(*Error)
-	default:
-		return ServerErr
-	}
-}

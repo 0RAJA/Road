@@ -136,7 +136,7 @@ func AddManager(ctx *gin.Context) {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /manager [put]
+// @Router /manager/update [put]
 func UpdateManager(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.UpdateManagerRequest{}
@@ -203,7 +203,7 @@ func DeleteManager(ctx *gin.Context) {
 // @Success 200 {object} logic.ListManagerReply "返回管理员的用户名"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /manager [get]
+// @Router /manager/list [get]
 func ListManagers(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{

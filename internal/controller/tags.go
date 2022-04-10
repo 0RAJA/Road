@@ -21,7 +21,7 @@ import (
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /tag [post]
+// @Router /tag/add [post]
 func AddTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.AddTagParams{}
@@ -75,7 +75,7 @@ func DeleteTag(ctx *gin.Context) {
 // @Success 200 {string} string ""
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /tag [put]
+// @Router /tag/update [put]
 func UpdateTag(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.UpdateTagParams{}
@@ -103,7 +103,7 @@ func UpdateTag(ctx *gin.Context) {
 // @Success 200 {object} logic.ListTagsReply "返回帖子对应的所有标签的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /tag [get]
+// @Router /tag/update [get]
 func ListTags(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{

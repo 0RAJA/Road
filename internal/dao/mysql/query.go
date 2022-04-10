@@ -7,7 +7,7 @@ var (
 )
 
 type Queries struct {
-	*db.Queries
+	db.Querier
 }
 
 func QueryInit(driverName, dataSourceName string) {

@@ -240,7 +240,7 @@ func ModifyPostPublic(ctx *gin.Context) {
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos [get]
+// @Router /post/infos/list [get]
 func ListPostInfos(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.ListPostInfosParams{
@@ -351,7 +351,7 @@ func SearchPostInfosByCreateTime(ctx *gin.Context) {
 // @Success 200 {object} logic.ListPostInfosReply "返回帖子简介的数组和描述数组大小的信息"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /post/infos/visit/grow [get]
+// @Router /post/infos/visit [get]
 func ListPostInfosOrderByGrowingVisited(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	params := logic.Pagination{
